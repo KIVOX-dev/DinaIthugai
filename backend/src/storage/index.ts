@@ -86,6 +86,17 @@ export function setStorageForTests(s: ObjectStorage | null) {
   override = s;
 }
 
+/** Storage backend that holds an existing asset (assets remember where they were written). */
+export function getStorageFor(kind: "b2" | "local"): ObjectStorage {
+  if (override) return override;
+  const e = env();
+  if (kind === "b2") {
+    if (!b2Configured(e)) throw new Error("Asset is stored in Backblaze B2 but B2 is not configured on this server.");
+    return getStorage();
+  }
+  return new LocalStorage(path.resolve(process.cwd(), e.LOCAL_UPLOAD_DIR));
+}
+
 export function getStorage(): ObjectStorage {
   if (override) return override;
   if (cached) return cached;

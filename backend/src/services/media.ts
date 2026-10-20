@@ -3,7 +3,7 @@ import { connectDB, oid } from "../db";
 import { env } from "../env";
 import { Article, MediaAsset, type MediaDoc } from "../models";
 import { can, isStaff } from "../shared/permissions";
-import { getStorage } from "../storage";
+import { getStorage, getStorageFor } from "../storage";
 import { ImageRejected, processImage } from "../storage/image";
 import { plain } from "../text";
 import { ServiceError, forbidden, invalid, notFound, type Principal } from "./common";
@@ -126,9 +126,11 @@ export async function replaceMedia(actor: Principal, id: string, buffer: Buffer)
   const m = _id && (await MediaAsset.findOne({ _id, deletedAt: { $exists: false } }));
   if (!m) throw notFound();
   const oldKeys = m.variants.map((v) => v.key!).filter(Boolean);
-  const { processed, stored } = await storeVariants(buffer);
+  const oldStore = getStorageFor(m.storage as "b2" | "local");
+  const { processed, stored, storageKind } = await storeVariants(buffer);
   const orig = stored.find((s) => s.name === "orig")!;
   m.key = orig.key;
+  m.storage = storageKind;
   m.size = orig.size;
   m.width = processed.width;
   m.height = processed.height;
@@ -138,7 +140,7 @@ export async function replaceMedia(actor: Principal, id: string, buffer: Buffer)
   );
   await m.save();
   // Only delete old objects after the DB points at the new ones.
-  await Promise.allSettled(oldKeys.map((k) => getStorage().delete(k)));
+  await Promise.allSettled(oldKeys.map((k) => oldStore.delete(k)));
   await audit(actor, "media.replace", { type: "media", id });
   return toMediaDTO(m.toObject() as MediaDoc);
 }
@@ -159,7 +161,8 @@ export async function deleteMedia(actor: Principal, id: string) {
 
 async function removeAssetObjects(m: MediaDoc) {
   const keys = new Set<string>([m.key, ...m.variants.map((v) => v.key!).filter(Boolean)]);
-  await Promise.allSettled([...keys].map((k) => getStorage().delete(k)));
+  const store = getStorageFor(m.storage as "b2" | "local");
+  await Promise.allSettled([...keys].map((k) => store.delete(k)));
 }
 
 /** Removes uploads that never became part of an article (default: older than 24h). */
@@ -197,7 +200,7 @@ export async function getMediaForDelivery(id: string, variant: string, viewer: P
   }
   const v = m.variants.find((x) => x.name === variant) ?? m.variants.find((x) => x.name === "lg") ?? m.variants[0];
   const key = v?.key ?? m.key;
-  const obj = await getStorage().get(key);
+  const obj = await getStorageFor(m.storage as "b2" | "local").get(key);
   if (!obj) return null;
   return { body: obj.body, contentType: "image/webp", public: isPublic };
 }
