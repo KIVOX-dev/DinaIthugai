@@ -135,8 +135,14 @@ export function ArticleEditor({
   const [autosaving, setAutosaving] = useState(false);
   const [upload, setUpload] = useState<number | null>(null);
   const dirty = useRef(false);
+  const alertRef = useRef<HTMLDivElement>(null);
   const handles = { ta: useRef<EditorHandle | null>(null), en: useRef<EditorHandle | null>(null) };
   const editable = initial ? initial.can.edit : true;
+
+  // The message lives at the top of a long form while the buttons are at the bottom: bring it into view.
+  useEffect(() => {
+    alertRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [top]);
 
   const set = useCallback((patch: Partial<Form>) => {
     dirty.current = true;
@@ -230,7 +236,13 @@ export function ArticleEditor({
     setBusy(null);
     if (!r.ok) {
       setErrors(r.fieldErrors ?? {});
-      return setTop({ kind: "error", text: r.fieldErrors ? Object.values(r.fieldErrors).map((c) => msg(lang, c)).join(" ") || r.error : r.error });
+      const prefWords = words(form.body[form.preferredLanguage]);
+      const text = r.fieldErrors
+        ? Object.values(r.fieldErrors)
+            .map((c) => (c === "v.min_words" ? `${msg(lang, c)} ${prefWords} / ${minWords}` : msg(lang, c)))
+            .join(" ") || r.error
+        : r.error;
+      return setTop({ kind: "error", text });
     }
     dirty.current = false;
     router.push(fill(afterSubmitHref, savedId));
@@ -269,7 +281,11 @@ export function ArticleEditor({
           <p className="mt-1 whitespace-pre-wrap text-sm">{initial.reviewNote}</p>
         </div>
       )}
-      {top && <FormAlert kind={top.kind}>{top.text}</FormAlert>}
+      {top && (
+        <div ref={alertRef}>
+          <FormAlert kind={top.kind}>{top.text}</FormAlert>
+        </div>
+      )}
 
       <SelectField id="preferredLanguage" lang={lang} label={t("submit.lang")} value={form.preferredLanguage} disabled={!editable} onChange={(ev) => set({ preferredLanguage: ev.target.value as Lang2 })}>
         <option value="ta">தமிழ்</option>
@@ -307,7 +323,12 @@ export function ArticleEditor({
           </div>
         ))}
         <p className="mt-1 text-xs text-ink3" aria-live="polite">
-          {t("submit.words", { n: wc })} · {minWords > 0 && !staff ? `min ${minWords}` : ""} · {imageCount}/{maxImages} 🖼
+          {t("submit.words", { n: wc })} · {imageCount}/{maxImages} 🖼
+          {!staff && minWords > 0 && (
+            <span className={words(form.body[form.preferredLanguage]) >= minWords ? "ml-2 font-bold text-ok" : "ml-2 font-bold text-warn"}>
+              · {words(form.body[form.preferredLanguage])} / {minWords} {t("submit.min_words_label")}
+            </span>
+          )}
         </p>
       </div>
 
