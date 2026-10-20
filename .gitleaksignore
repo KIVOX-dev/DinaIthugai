@@ -1,0 +1,2 @@
+# Historical false positive: a throwaway password for automated test accounts (since disabled), replaced by a random per-run value.
+195ef7d24d49f64a22f1c22a3fa0e801dc12f0a0:frontend/tests/e2e/workflow.spec.ts:generic-api-key:20

@@ -1,4 +1,5 @@
 import { execSync } from "node:child_process";
+import { randomBytes } from "node:crypto";
 import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
 import sharp from "sharp";
@@ -17,7 +18,7 @@ const EDITOR = { email: "editor@demo.invalid", password: process.env.E2E_EDITOR_
 // Our own alerts, excluding Next.js's hidden route announcer which also has role="alert".
 const appAlert = (page: Page) => page.locator('[role="alert"]:not(#__next-route-announcer__)');
 const stamp = Date.now();
-const USER = { name: "E2E Reader", email: `e2e+${stamp}@example.test`, password: "E2eTest-Pass-12345" };
+const USER = { name: "E2E Reader", email: `e2e+${stamp}@example.test`, password: `E2e-${randomBytes(9).toString("base64url")}-1a` }; // random per run: no credential literal in the repo
 const TITLE = `[E2E TEST] Community report ${stamp}`;
 const BODY = Array.from({ length: 90 }, (_, i) => `word${i}`).join(" ");
 
