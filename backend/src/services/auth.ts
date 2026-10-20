@@ -1,11 +1,11 @@
 import { connectDB } from "../db";
-import { env } from "../env";
+import { env, isProd } from "../env";
 import { AuthToken, Session, User, type UserDoc } from "../models";
 import { DUMMY_HASH, hashPassword, newToken, sha256, verifyPassword } from "../auth/crypto";
 import { loginSchema, profileSchema, registerSchema, resetPasswordSchema, flattenIssues, emailSchema, passwordSchema } from "../validation/schemas";
 import { plain } from "../text";
 import { ServiceError, invalid, type Principal } from "./common";
-import { audit, enforceRateLimit, sendEmail } from "./platform";
+import { audit, emailConfigured, enforceRateLimit, sendEmail } from "./platform";
 import { getSettings } from "./settings";
 
 const MAX_FAILED = 5;
@@ -98,6 +98,7 @@ export async function resendVerification(email: string, ctx: RequestCtx = {}) {
   await connectDB();
   const e = emailSchema.safeParse(email);
   if (!e.success) return;
+  if (isProd() && !emailConfigured()) throw new ServiceError("unavailable", "Email delivery is not configured. Please contact the editorial office to verify your account.");
   await enforceRateLimit(`resend:${e.data}`, 3, 3600);
   const user = await User.findOne({ normalizedEmail: e.data });
   if (user && !user.emailVerifiedAt && user.accountStatus === "active") await sendVerification(user);

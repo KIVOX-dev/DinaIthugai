@@ -6,9 +6,10 @@ import { makeT, type DictKey } from "@/lib/i18n/dictionary";
 import { api } from "@/lib/client-api";
 import { buttonPrimary, FormAlert, SelectField, TextArea, TextField } from "@/components/forms/Field";
 
-export function ResendVerification({ lang }: { lang: Locale }) {
+export function ResendVerification({ lang, emailEnabled = true }: { lang: Locale; emailEnabled?: boolean }) {
   const t = makeT(lang);
-  const [state, setState] = useState<"idle" | "busy" | "sent">("idle");
+  const [state, setState] = useState<"idle" | "busy" | "sent" | "failed">("idle");
+  if (!emailEnabled || state === "failed") return <p className="text-sm text-ink2">{t("auth.verify.noemail")}</p>;
   return state === "sent" ? (
     <FormAlert kind="ok">{t("auth.verify.sent")}</FormAlert>
   ) : (
@@ -18,8 +19,8 @@ export function ResendVerification({ lang }: { lang: Locale }) {
       className="rounded border border-brand px-3 py-1.5 text-sm font-bold text-brand hover:bg-paper"
       onClick={async () => {
         setState("busy");
-        await api("/auth/resend-verification", { method: "POST", body: {} });
-        setState("sent");
+        const r = await api("/auth/resend-verification", { method: "POST", body: {} });
+        setState(r.ok ? "sent" : "failed");
       }}
     >
       {t("auth.verify.resend")}

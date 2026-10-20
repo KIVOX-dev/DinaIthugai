@@ -25,7 +25,7 @@ function useForm(lang: Locale) {
 const val = (fd: FormData, k: string) => String(fd.get(k) ?? "");
 
 /* -------------------------------- login -------------------------------- */
-export function LoginForm({ lang, next, notice }: { lang: Locale; next?: string; notice?: "registered" | "reset" }) {
+export function LoginForm({ lang, next, notice, emailEnabled = true }: { lang: Locale; next?: string; notice?: "registered" | "reset"; emailEnabled?: boolean }) {
   const f = useForm(lang);
   const router = useRouter();
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
@@ -44,7 +44,7 @@ export function LoginForm({ lang, next, notice }: { lang: Locale; next?: string;
   }
   return (
     <form onSubmit={onSubmit} className="space-y-4" noValidate>
-      {notice === "registered" && <FormAlert kind="ok">{f.t("auth.register.done")}</FormAlert>}
+      {notice === "registered" && <FormAlert kind="ok">{f.t(emailEnabled ? "auth.register.done" : "auth.register.done_noemail")}</FormAlert>}
       {notice === "reset" && <FormAlert kind="ok">{f.t("auth.reset.done")}</FormAlert>}
       {f.top && <FormAlert>{f.top}</FormAlert>}
       <TextField id="email" lang={lang} label={f.t("form.email")} type="email" autoComplete="email" required error={f.errors.email} />

@@ -66,6 +66,7 @@ export type SiteSettings = {
   maxImages: number;
   minWords: number;
   aiEnabled: boolean;
+  emailEnabled: boolean;
   logo?: string;
 };
 

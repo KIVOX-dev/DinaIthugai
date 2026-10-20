@@ -9,7 +9,8 @@ import { getActiveAds, getByAuthor, getCategoryBySlug, getCategoryFeed, getCateg
 import { searchParamsSchema } from "../validation/schemas";
 import { param, user } from "../http";
 import { principalFromToken } from "../services/auth";
-import { env } from "../env";
+import { env, isProd } from "../env";
+import { emailConfigured } from "../services/platform";
 
 export const publicRouter = Router();
 
@@ -39,6 +40,8 @@ publicRouter.get("/site", async (req, res) => {
       maxImages: s.submissions?.maxImagesPerArticle ?? 8,
       minWords: s.submissions?.minWords ?? 80,
       aiEnabled: s.ai?.enabled !== false,
+      // false in production until SMTP is configured: the UI must not claim an email was sent.
+      emailEnabled: emailConfigured() || !isProd(),
       logo: s.logoMediaId ? mediaUrl(s.logoMediaId, "md") : undefined,
     },
   });

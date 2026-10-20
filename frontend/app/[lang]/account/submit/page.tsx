@@ -30,7 +30,7 @@ export default async function Submit({ params }: PageProps<"/[lang]/account/subm
           {!user.emailVerified && (
             <div className="mb-4 space-y-2 rounded border border-warn bg-paper2 p-3">
               <p className="font-bold">{t("submit.verify_first")}</p>
-              <ResendVerification lang={lang} />
+              <ResendVerification lang={lang} emailEnabled={site.settings.emailEnabled} />
             </div>
           )}
           <ArticleEditor lang={lang} initial={null} tree={site.tree} maxImages={site.settings.maxImages} minWords={site.settings.minWords} afterSubmitHref={`/${lang}/account/submissions/{id}?submitted=1`} basePath={`/${lang}/account/submissions/{id}/edit`} />
