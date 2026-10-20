@@ -1,0 +1,8 @@
+title = "Dina Idhigai gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Example env files contain variable names only, never values"
+paths = ['''(^|/)\.env\.example$''']
