@@ -221,12 +221,13 @@ export function ArticleEditor({
 
   // Warn before leaving with unsaved changes.
   useEffect(() => {
+    if (!editable) return; // read-only (e.g. an editor reviewing) can never have unsaved edits
     const h = (e: BeforeUnloadEvent) => {
       if (dirty.current) e.preventDefault();
     };
     window.addEventListener("beforeunload", h);
     return () => window.removeEventListener("beforeunload", h);
-  }, []);
+  }, [editable]);
 
   async function submitForReview() {
     const savedId = await save(false);

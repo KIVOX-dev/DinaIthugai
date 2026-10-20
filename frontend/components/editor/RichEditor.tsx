@@ -44,6 +44,8 @@ export function RichEditor({ lang, value, onChange, placeholder, disabled, onUpl
   const fileRef = useRef<HTMLInputElement>(null);
   const [progress, setProgress] = useState<number | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  // Editor updates that were not caused by the user (initial load / normalisation) must not count as edits.
+  const programmatic = useRef(false);
   const editor = useEditor({
     immediatelyRender: false, // avoids SSR hydration mismatch
     editable: !disabled,
@@ -54,7 +56,11 @@ export function RichEditor({ lang, value, onChange, placeholder, disabled, onUpl
     ],
     content: value,
     editorProps: { attributes: { id: id ?? "editor", lang: language ?? "", class: "prose-news max-w-none", spellcheck: "true" } },
-    onUpdate: ({ editor: e }) => onChange(e.isEmpty ? "" : e.getHTML()),
+    onUpdate: ({ editor: e, transaction }) => {
+      if (!transaction.docChanged) return;
+      if (!e.isFocused && !programmatic.current) return; // not typed by the user
+      onChange(e.isEmpty ? "" : e.getHTML());
+    },
   });
 
   useEffect(() => {
@@ -64,7 +70,11 @@ export function RichEditor({ lang, value, onChange, placeholder, disabled, onUpl
   useEffect(() => {
     if (!handleRef) return;
     handleRef.current = {
-      setHtml: (html) => editor?.commands.setContent(html, { emitUpdate: true }),
+      setHtml: (html) => {
+        programmatic.current = true; // an accepted AI/restore change IS a real edit
+        editor?.commands.setContent(html, { emitUpdate: true });
+        programmatic.current = false;
+      },
       getHtml: () => (editor && !editor.isEmpty ? editor.getHTML() : ""),
     };
     return () => {

@@ -53,6 +53,29 @@ test.describe("smoke", () => {
         expect(errors).toEqual([]);
       });
     }
+    test("no 'unsaved changes' prompt unless something was really edited", async ({ page }) => {
+      const dialogs: string[] = [];
+      page.on("dialog", (d) => {
+        dialogs.push(d.type());
+        void d.accept();
+      });
+      await page.goto("/admin/articles?status=published");
+      await page.getByRole("link").filter({ hasText: /DEMO/ }).first().click();
+      await expect(page.getByRole("heading", { name: "Workflow" })).toBeVisible();
+      await page.waitForTimeout(1500); // let the editor finish loading
+      await page.goto("/admin"); // leaving without touching anything
+      expect(dialogs).toEqual([]);
+
+      await page.goto("/admin/articles?status=published");
+      await page.getByRole("link").filter({ hasText: /DEMO/ }).first().click();
+      await expect(page.getByRole("heading", { name: "Workflow" })).toBeVisible();
+      await page.getByRole("tab", { name: /English version/ }).click();
+      await page.locator("#excerpt-en").click();
+      await page.keyboard.type(" edited");
+      await page.goto("/admin"); // leaving after a real edit must still warn
+      expect(dialogs).toContain("beforeunload");
+    });
+
     test("admin can open a user, an article editor and a seeded article public page", async ({ page }) => {
       const errors = watch(page);
       await page.goto("/admin/users");
