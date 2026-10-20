@@ -31,8 +31,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="min-h-screen lg:grid lg:grid-cols-[15rem_1fr]">
           <aside className="border-b border-rule bg-paper lg:min-h-screen lg:border-b-0 lg:border-r">
             <div className="flex items-center justify-between px-4 py-3">
-              <Link href="/admin" className="headline text-xl text-brand no-underline">
-                தின இதிகை <span className="text-sm text-ink3">Newsroom</span>
+              <Link href="/admin" className="flex flex-col gap-1 no-underline" aria-label="Dina Idhigai newsroom">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt="தின இதிகை" width={785} height={160} className="logo-img h-10 w-auto self-start" />
+                <span className="text-xs font-bold uppercase tracking-widest text-ink3">Newsroom</span>
               </Link>
             </div>
             <nav aria-label="Admin" className="no-scrollbar flex gap-1 overflow-x-auto px-2 pb-2 lg:flex-col lg:overflow-visible lg:pb-4">
