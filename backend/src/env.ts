@@ -7,7 +7,9 @@ const schema = z.object({
   MONGODB_DB: z.string().default("dinaidhigai"),
   APP_URL: z.string().default("http://localhost:3000"),
   FRONTEND_URL: z.string().optional(),
+  // Zoho Catalyst AppSail injects the listen port as X_ZOHO_CATALYST_LISTEN_PORT.
   PORT: z.coerce.number().default(4000),
+  X_ZOHO_CATALYST_LISTEN_PORT: z.coerce.number().optional(),
   SESSION_COOKIE: z.string().default("di_session"),
   SESSION_TTL_DAYS: z.coerce.number().default(14),
   CRON_SECRET: z.string().optional(),
@@ -42,6 +44,8 @@ export type Env = z.infer<typeof schema>;
 export function env(): Env {
   return schema.parse(process.env);
 }
+
+export const listenPort = () => env().X_ZOHO_CATALYST_LISTEN_PORT ?? env().PORT;
 
 export const isProd = () => process.env.NODE_ENV === "production";
 

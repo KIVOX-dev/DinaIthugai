@@ -1,10 +1,10 @@
 import Link from "next/link";
-import type { Locale } from "@/shared/i18n";
-import type { CategoryNode } from "@/backend/articles/queries";
-import type { SettingsDoc } from "@/backend/models";
-import { makeT } from "@/frontend/i18n/dictionary";
+import type { Locale } from "@/lib/shared/i18n";
+import type { CategoryNode, SiteSettings } from "@/lib/types";
+import { makeT } from "@/lib/i18n/dictionary";
+import { SocialIcons } from "./SocialIcons";
 
-export function Footer({ lang, settings, tree }: { lang: Locale; settings: SettingsDoc; tree: CategoryNode[] }) {
+export function Footer({ lang, settings, tree }: { lang: Locale; settings: SiteSettings; tree: CategoryNode[] }) {
   const t = makeT(lang);
   const pages = [
     ["about", t("footer.about")],
@@ -14,71 +14,82 @@ export function Footer({ lang, settings, tree }: { lang: Locale; settings: Setti
     ["privacy", t("footer.privacy")],
     ["terms", t("footer.terms")],
   ] as const;
-  const social = Object.entries(settings.social ?? {}).filter(([, v]) => v);
+  const link = "no-underline hover:underline";
   return (
-    <footer className="mt-12 border-t-4 border-brand bg-paper2">
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 md:grid-cols-4">
-        <div>
-          <p className="headline text-2xl text-brand">{settings.siteName?.[lang]}</p>
-          <p className="mt-2 text-sm text-ink2">{settings.tagline?.[lang]}</p>
-          {settings.contact?.email && (
-            <p className="mt-3 text-sm">
-              <a href={`mailto:${settings.contact.email}`}>{settings.contact.email}</a>
-            </p>
-          )}
-          {settings.contact?.address?.[lang] && <p className="text-sm text-ink2">{settings.contact.address[lang]}</p>}
-        </div>
-        <div>
-          <h2 className="mb-2 font-bold">{t("footer.sections")}</h2>
-          <ul className="grid grid-cols-2 gap-1 text-sm">
-            {tree.map((c) => (
-              <li key={c.slug}>
-                <Link href={`/${lang}/${c.slug}`} className="no-underline hover:underline">
-                  {c.name[lang]}
+    <footer className="mt-14 bg-[#6e6a67] text-white">
+      <div className="mx-auto max-w-[1500px] 2xl:max-w-[1800px] px-4 py-10">
+        <div className="grid gap-10 md:grid-cols-12">
+          <div className="md:col-span-4">
+            <Link href={`/${lang}`} className="inline-block rounded bg-white px-3 py-2" aria-label={settings.siteName[lang] ?? undefined}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={settings.logo ?? "/logo.png"} alt={settings.siteName[lang] ?? ""} width={785} height={160} className="h-12 w-auto" loading="lazy" />
+            </Link>
+            <p className="mt-3 max-w-xs text-sm text-white/85">{settings.tagline[lang]}</p>
+            <div className="mt-4">
+              <SocialIcons social={settings.social} />
+            </div>
+            {settings.contact?.email && (
+              <p className="mt-4 text-sm">
+                <a href={`mailto:${settings.contact.email}`} className={link}>
+                  {settings.contact.email}
+                </a>
+              </p>
+            )}
+            {settings.contact?.phone && <p className="text-sm">{settings.contact.phone}</p>}
+            {settings.contact?.address?.[lang] && <p className="mt-1 text-sm text-white/85">{settings.contact.address[lang]}</p>}
+          </div>
+
+          <nav aria-label={t("footer.sections")} className="md:col-span-5">
+            <h2 className="headline mb-3 border-b border-white/30 pb-2 text-xl">{t("footer.sections")}</h2>
+            <ul className="grid grid-cols-2 gap-x-6 gap-y-1.5 sm:grid-cols-3">
+              {tree.map((c) => (
+                <li key={c.slug}>
+                  <Link href={`/${lang}/${c.slug}`} className={`headline ${link} text-[1.05rem]`}>
+                    {c.name[lang]}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link href={`/${lang}/gallery`} className={`headline ${link} text-[1.05rem]`}>
+                  {t("nav.gallery")}
                 </Link>
               </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h2 className="mb-2 font-bold">{t("footer.company")}</h2>
-          <ul className="space-y-1 text-sm">
-            {pages.map(([slug, label]) => (
-              <li key={slug}>
-                <Link href={`/${lang}/${slug}`} className="no-underline hover:underline">
-                  {label}
+            </ul>
+          </nav>
+
+          <nav aria-label={t("footer.company")} className="md:col-span-3">
+            <h2 className="headline mb-3 border-b border-white/30 pb-2 text-xl">{t("footer.company")}</h2>
+            <ul className="space-y-1.5 text-[15px]">
+              {pages.map(([slug, label]) => (
+                <li key={slug}>
+                  <Link href={`/${lang}/${slug}`} className={link}>
+                    {label}
+                  </Link>
+                </li>
+              ))}
+              <li>
+                <Link href={`/${lang}/account/submit`} className={link}>
+                  {t("nav.submit")}
                 </Link>
               </li>
-            ))}
-            {(settings.footerLinks ?? []).map((l) => (
-              <li key={l.href}>
-                <a href={l.href ?? "#"} className="no-underline hover:underline">
-                  {l.label?.[lang] ?? l.label?.en}
+              <li>
+                <a href={`/rss/${lang}.xml`} className={link}>
+                  RSS
                 </a>
               </li>
-            ))}
-          </ul>
-        </div>
-        <div>
-          <h2 className="mb-2 font-bold">{t("footer.follow")}</h2>
-          <ul className="space-y-1 text-sm">
-            {social.map(([k, v]) => (
-              <li key={k}>
-                <a href={String(v)} rel="noopener noreferrer" target="_blank" className="capitalize no-underline hover:underline">
-                  {k}
-                </a>
-              </li>
-            ))}
-            <li>
-              <a href={`/rss/${lang}.xml`} className="no-underline hover:underline">
-                RSS
-              </a>
-            </li>
-          </ul>
+              {(settings.footerLinks ?? []).map((l) => (
+                <li key={l.href}>
+                  <a href={l.href ?? "#"} className={link}>
+                    {l.label?.[lang] ?? l.label?.en}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
         </div>
       </div>
-      <div className="border-t border-rule py-3 text-center text-xs text-ink3">
-        © {new Date().getFullYear()} {settings.siteName?.[lang]}. {t("footer.rights")}
+      <div className="border-t border-white/25 bg-black/15 py-3 text-center text-xs text-white/85">
+        © {new Date().getFullYear()} {settings.siteName[lang]}. {t("footer.rights")}
       </div>
     </footer>
   );

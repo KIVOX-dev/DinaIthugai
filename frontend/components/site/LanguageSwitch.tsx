@@ -1,7 +1,7 @@
 "use client";
 import { usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import type { Locale } from "@/shared/i18n";
+import type { Locale } from "@/lib/shared/i18n";
 
 /** தமிழ் | English toggle. Swaps the locale prefix, keeping path and query; localized slugs are canonicalised by the target page. */
 export function LanguageSwitch({ lang, label }: { lang: Locale; label: string }) {

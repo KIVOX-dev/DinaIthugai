@@ -1,0 +1,9 @@
+
+> dinaidhigai-backend@0.1.0 dev
+> tsx watch --env-file=.env src/server.ts
+
+API listening on http://localhost:4000
+12:33:08 am [tsx] change in ./src\articles\queries.ts Restarting...
+API listening on http://localhost:4000
+12:48:18 am [tsx] change in ./src\server.ts Restarting...
+API listening on port 4000

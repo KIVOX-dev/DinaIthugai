@@ -1,20 +1,19 @@
 import Link from "next/link";
-import type { Locale } from "@/shared/i18n";
-import type { Principal } from "@/backend/services/common";
-import type { CategoryNode } from "@/backend/articles/queries";
-import type { SettingsDoc } from "@/backend/models";
-import { isStaff } from "@/shared/permissions";
-import { formatLongDate, makeT } from "@/frontend/i18n/dictionary";
+import type { Locale } from "@/lib/shared/i18n";
+import type { CategoryNode, Principal, SiteSettings } from "@/lib/types";
+import { isStaff } from "@/lib/shared/permissions";
+import { formatLongDate, makeT } from "@/lib/i18n/dictionary";
 import { LanguageSwitch } from "./LanguageSwitch";
 import { Masthead } from "./Logo";
-import { MobileNav, type NavItem } from "./MobileNav";
-import { SearchBox } from "./SearchBox";
-import { logoutAction } from "@/app/_actions/auth";
+import { MenuDrawer, type NavItem } from "./MobileNav";
+import { SearchToggle } from "./SearchToggle";
+import { LogoutButton } from "./LogoutButton";
+import { SocialIcons } from "./SocialIcons";
 
-export function Header({ lang, settings, tree, user }: { lang: Locale; settings: SettingsDoc; tree: CategoryNode[]; user: Principal | null }) {
+export function Header({ lang, settings, tree, user }: { lang: Locale; settings: SiteSettings; tree: CategoryNode[]; user: Principal | null }) {
   const t = makeT(lang);
   const nav = tree.filter((n) => n.showInNav);
-  const items: NavItem[] = [
+  const drawer: NavItem[] = [
     { href: `/${lang}`, label: t("nav.home") },
     ...nav.map((n) => ({ href: `/${lang}/${n.slug}`, label: n.name[lang], children: n.children.map((c) => ({ href: `/${lang}/${c.slug}`, label: c.name[lang] })) })),
   ];
@@ -25,26 +24,41 @@ export function Header({ lang, settings, tree, user }: { lang: Locale; settings:
     { href: `/${lang}/account/submit`, label: t("nav.submit") },
     ...(user ? [{ href: `/${lang}/account`, label: t("nav.account") }] : [{ href: `/${lang}/login`, label: t("nav.login") }, { href: `/${lang}/register`, label: t("nav.register") }]),
   ];
-  const visible = items.slice(0, 9);
-  const overflow = items.slice(9);
+  const primary = nav.slice(0, 8);
+  const now = new Date();
 
   return (
-    <header className="relative border-b border-rule bg-paper">
+    <header className="bg-paper">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:bg-brand focus:p-2 focus:text-brand-ink">
         {t("site.skip")}
       </a>
-      <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-2 px-4 py-2 text-sm text-ink2">
-        <div className="flex items-center gap-3">
-          <time dateTime={new Date().toISOString()}>{formatLongDate(new Date(), lang)}</time>
-          {settings.edition?.[lang] && (
-            <span className="hidden border-l border-rule pl-3 sm:inline">
-              {t("home.edition")}: <strong>{settings.edition[lang]}</strong>
-            </span>
-          )}
+
+      {/* Row 1: social + quick links (left), logo (centre), language / account / submit (right) */}
+      <div className="mx-auto grid max-w-[1500px] 2xl:max-w-[1800px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-2 lg:py-4">
+        <div className="hidden min-w-0 flex-wrap items-center gap-x-4 gap-y-2 lg:flex">
+          <SocialIcons social={settings.social} />
+          <Link href={`/${lang}/latest`} className="headline text-lg font-medium no-underline hover:text-brand">
+            {t("nav.latest")}
+          </Link>
+          <Link href={`/${lang}/trending`} className="headline text-lg font-medium no-underline hover:text-brand">
+            {t("nav.trending")}
+          </Link>
+          <Link href={`/${lang}/gallery`} className="headline text-lg font-medium no-underline hover:text-brand">
+            {t("nav.gallery")}
+          </Link>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="col-span-3 row-start-2 text-center lg:col-span-1 lg:col-start-2 lg:row-start-1">
+          <div className="inline-block">
+            <Masthead lang={lang} name={settings.siteName} logoSrc={settings.logo} />
+            <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-ink3">
+              <time dateTime={now.toISOString()}>{formatLongDate(now, lang)}</time>
+              {settings.edition?.[lang] && <span> · {settings.edition[lang]}</span>}
+            </p>
+          </div>
+        </div>
+        <div className="relative z-10 col-span-3 row-start-1 flex min-w-0 flex-col items-end gap-2 lg:col-span-1 lg:col-start-3">
           <LanguageSwitch lang={lang} label={t("lang.switch")} />
-          <div className="hidden items-center gap-3 sm:flex">
+          <div className="hidden items-center gap-3 text-sm lg:flex">
             {user ? (
               <>
                 {isStaff(user) && (
@@ -52,13 +66,10 @@ export function Header({ lang, settings, tree, user }: { lang: Locale; settings:
                     {t("nav.admin")}
                   </Link>
                 )}
-                <Link href={`/${lang}/account`} className="no-underline hover:underline">
+                <Link href={`/${lang}/account`} className="max-w-32 truncate no-underline hover:underline">
                   {user.name}
                 </Link>
-                <form action={logoutAction}>
-                  <input type="hidden" name="lang" value={lang} />
-                  <button className="hover:underline">{t("nav.logout")}</button>
-                </form>
+                <LogoutButton lang={lang} label={t("nav.logout")} />
               </>
             ) : (
               <>
@@ -70,59 +81,39 @@ export function Header({ lang, settings, tree, user }: { lang: Locale; settings:
                 </Link>
               </>
             )}
+            <Link href={`/${lang}/account/submit`} className="rounded bg-accent px-3 py-1.5 font-bold text-white no-underline">
+              {t("nav.submit")}
+            </Link>
           </div>
         </div>
       </div>
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 pb-3 pt-1">
-        <div className="hidden w-64 lg:block">
-          <SearchBox lang={lang} placeholder={t("search.placeholder")} label={t("nav.search")} />
+      {/* Row 2: full-width grey navigation bar: menu, sections, search */}
+      <nav aria-label="Sections" className="bg-[#6e6a67] text-white">
+        <div className="mx-auto flex max-w-[1500px] 2xl:max-w-[1800px] items-center px-2">
+          <MenuDrawer lang={lang} items={drawer} extra={extra} labels={{ menu: t("nav.menu"), close: t("nav.close"), sections: t("footer.sections") }} />
+          <ul className="no-scrollbar flex flex-1 items-stretch justify-start gap-1 overflow-x-auto md:justify-center lg:gap-3">
+            {primary.map((n) => (
+              <li key={n.slug} className="group relative shrink-0">
+                <Link href={`/${lang}/${n.slug}`} className="headline block whitespace-nowrap px-3 py-2.5 text-[1.05rem] font-bold no-underline hover:bg-white/10 lg:text-[1.3rem]">
+                  {n.name[lang]}
+                </Link>
+                {n.children.length > 0 && (
+                  <ul className="absolute left-0 top-full z-30 hidden min-w-44 border border-rule bg-paper py-1 text-ink shadow-lg group-focus-within:block group-hover:block">
+                    {n.children.map((c) => (
+                      <li key={c.slug}>
+                        <Link href={`/${lang}/${c.slug}`} className="block px-3 py-1.5 text-sm font-medium no-underline hover:bg-paper2">
+                          {c.name[lang]}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ul>
+          <SearchToggle lang={lang} placeholder={t("search.placeholder")} label={t("nav.search")} />
         </div>
-        <div className="flex-1 text-center">
-          <Masthead lang={lang} name={settings.siteName} />
-          <p className="mt-1 hidden text-xs uppercase tracking-widest text-ink3 sm:block">{settings.tagline?.[lang]}</p>
-        </div>
-        <Link href={`/${lang}/account/submit`} className="hidden rounded bg-accent px-3 py-2 text-sm font-bold text-white no-underline lg:block">
-          {t("nav.submit")}
-        </Link>
-        <MobileNav lang={lang} items={items} extra={extra} labels={{ menu: t("nav.menu"), close: t("nav.close") }} />
-      </div>
-
-      <nav aria-label="Sections" className="hidden border-y-2 border-ink bg-paper md:block">
-        <ul className="mx-auto flex max-w-7xl flex-wrap items-stretch px-2 text-[15px] font-bold">
-          {visible.map((it) => (
-            <li key={it.href} className="group relative">
-              <Link href={it.href} className="block px-3 py-2.5 no-underline hover:bg-brand hover:text-brand-ink">
-                {it.label}
-              </Link>
-              {it.children && it.children.length > 0 && (
-                <ul className="absolute left-0 top-full z-30 hidden min-w-48 border border-rule bg-paper py-1 shadow-lg group-focus-within:block group-hover:block">
-                  {it.children.map((c) => (
-                    <li key={c.href}>
-                      <Link href={c.href} className="block px-3 py-1.5 text-sm font-medium no-underline hover:bg-paper2">
-                        {c.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-          <li className="group relative">
-            <span tabIndex={0} className="block cursor-default px-3 py-2.5 hover:bg-paper2">
-              {t("nav.more")} ▾
-            </span>
-            <ul className="absolute right-0 top-full z-30 hidden min-w-44 border border-rule bg-paper py-1 shadow-lg group-focus-within:block group-hover:block">
-              {[...overflow, ...extra.slice(0, 3)].map((c) => (
-                <li key={c.href}>
-                  <Link href={c.href} className="block px-3 py-1.5 text-sm font-medium no-underline hover:bg-paper2">
-                    {c.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </li>
-        </ul>
       </nav>
     </header>
   );

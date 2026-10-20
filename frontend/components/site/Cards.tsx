@@ -1,8 +1,7 @@
 import Link from "next/link";
-import type { ArticleCard } from "@/backend/articles/dto";
-import { articleHref } from "@/backend/articles/dto";
-import type { Locale } from "@/shared/i18n";
-import { formatDate } from "@/frontend/i18n/dictionary";
+import { articleHref, type ArticleCard } from "@/lib/types";
+import type { Locale } from "@/lib/shared/i18n";
+import { formatDate } from "@/lib/i18n/dictionary";
 
 function Thumb({ card, ratio = "16/9", sizes, priority = false }: { card: ArticleCard; ratio?: string; sizes: string; priority?: boolean }) {
   if (!card.image) {

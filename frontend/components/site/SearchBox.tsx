@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import type { Locale } from "@/shared/i18n";
+import type { Locale } from "@/lib/shared/i18n";
 
 /** Debounced search input. Submitting (or pausing) navigates to /{lang}/search?q= so filters live in the URL. */
 export function SearchBox({ lang, placeholder, label, initial = "", live = false }: { lang: Locale; placeholder: string; label: string; initial?: string; live?: boolean }) {

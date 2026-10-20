@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { Locale } from "@/shared/i18n";
+import type { Locale } from "@/lib/shared/i18n";
 
 /** Original emblem: a rising sun over an open book. Replaceable via site settings (logo media). */
 export function Emblem({ size = 56 }: { size?: number }) {
@@ -18,23 +18,11 @@ export function Emblem({ size = 56 }: { size?: number }) {
 
 export function Masthead({ lang, name, logoSrc, compact = false }: { lang: Locale; name: { ta?: string | null; en?: string | null }; logoSrc?: string; compact?: boolean }) {
   const label = name[lang] || name.en || name.ta || "Dina Idhigai";
-  const parts = label.split(" ");
   return (
-    <Link href={`/${lang}`} className="inline-flex items-center justify-center gap-3 no-underline" aria-label={label}>
-      {logoSrc ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={logoSrc} alt={label} className={compact ? "h-10 w-auto" : "h-16 w-auto sm:h-20"} />
-      ) : (
-        <>
-          <span className={`headline text-brand ${compact ? "text-3xl" : "text-5xl sm:text-6xl md:text-7xl"} leading-none`} style={{ letterSpacing: 0 }}>
-            {parts[0]}
-          </span>
-          {!compact && <Emblem size={64} />}
-          {parts.length > 1 && (
-            <span className={`headline text-brand ${compact ? "text-3xl" : "text-5xl sm:text-6xl md:text-7xl"} leading-none`}>{parts.slice(1).join(" ")}</span>
-          )}
-        </>
-      )}
+    <Link href={`/${lang}`} className="logo-link inline-flex items-center justify-center no-underline" aria-label={label}>
+      {/* Default: the client's masthead logo in /public/logo.png; an admin-uploaded logo (settings) overrides it. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={logoSrc ?? "/logo.png"} alt={label} width={785} height={160} className={`logo-img w-auto ${compact ? "h-9" : "h-14 sm:h-[4.5rem] md:h-20"}`} fetchPriority="high" />
     </Link>
   );
 }

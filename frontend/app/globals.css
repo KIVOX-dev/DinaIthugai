@@ -238,3 +238,19 @@ html[lang="ta"] .prose-news {
     gap: 1rem;
   }
 }
+
+/* The logo has black linework; give it a light plate in dark mode so it stays legible. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .logo-img {
+    background: #fff;
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

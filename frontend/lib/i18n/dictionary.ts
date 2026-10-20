@@ -1,4 +1,4 @@
-import type { Locale } from "@/shared/i18n";
+import type { Locale } from "@/lib/shared/i18n";
 
 const en = {
   "site.skip": "Skip to main content",

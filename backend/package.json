@@ -12,6 +12,7 @@
     "test": "vitest run",
     "db:init": "tsx --env-file=.env scripts/db-init.ts",
     "seed": "tsx --env-file=.env scripts/seed.ts",
+    "build:appsail": "node scripts/build-appsail.mjs",
     "admin:create": "tsx --env-file=.env scripts/create-admin.ts"
   },
   "dependencies": {

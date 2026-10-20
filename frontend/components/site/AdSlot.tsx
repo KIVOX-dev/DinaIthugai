@@ -1,5 +1,5 @@
-import type { Locale } from "@/shared/i18n";
-import { makeT } from "@/frontend/i18n/dictionary";
+import type { Locale } from "@/lib/shared/i18n";
+import { makeT } from "@/lib/i18n/dictionary";
 
 type Ad = { id: string; src: string; href: string; alt: string };
 

@@ -1,4 +1,6 @@
-﻿import type { NextConfig } from "next";
+import type { NextConfig } from "next";
+
+const BACKEND_URL = (process.env.BACKEND_URL ?? "http://localhost:4000").replace(/\/$/, "");
 
 const securityHeaders = [
   { key: "X-Content-Type-Options", value: "nosniff" },
@@ -24,8 +26,12 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
-  serverExternalPackages: ["sharp", "mongoose", "bcryptjs", "nodemailer"],
-  experimental: { serverActions: { bodySizeLimit: "2mb" } },
+  // Docker builds set NEXT_OUTPUT=standalone; Vercel uses its own output, so this stays off there.
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
+  async rewrites() {
+    // The browser only ever talks to the Next origin; /api/* is forwarded to the Express backend.
+    return [{ source: "/api/:path*", destination: `${BACKEND_URL}/api/:path*` }];
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

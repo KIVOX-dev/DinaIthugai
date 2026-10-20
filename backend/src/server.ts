@@ -1,5 +1,5 @@
 import app from "./app";
-import { env } from "./env";
+import { listenPort } from "./env";
 
-const port = env().PORT;
-app.listen(port, () => console.log(`API listening on http://localhost:${port}`));
+const port = listenPort();
+app.listen(port, () => console.log(`API listening on port ${port}`));

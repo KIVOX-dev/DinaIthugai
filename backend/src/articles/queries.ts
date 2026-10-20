@@ -137,8 +137,12 @@ export async function getHomepage(lang: Locale) {
   const used = new Set<string>();
   const lead = featured[0] ?? latestPool[0];
   if (lead) used.add(lead.id);
-  const secondary = [...featured.slice(1), ...latestPool].filter((c) => !used.has(c.id)).slice(0, 4);
-  secondary.forEach((c) => used.add(c.id));
+  const secondary: ArticleCard[] = [];
+  for (const c of [...featured.slice(1), ...latestPool]) {
+    if (used.has(c.id) || secondary.length >= 4) continue; // a story appears once on the page
+    used.add(c.id);
+    secondary.push(c);
+  }
   const latest = latestPool.filter((c) => !used.has(c.id)).slice(0, 10);
 
   const configured = (settings.homepageSections ?? []).filter((s) => s.enabled !== false && s.key && !["latest", "trending", "gallery"].includes(s.key)).sort((a, b) => (a.order ?? 100) - (b.order ?? 100));

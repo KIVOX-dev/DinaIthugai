@@ -1,0 +1,59 @@
+# Local / self-hosted stack.   docker compose up --build
+#   backend  -> http://localhost:4000   (API)
+#   frontend -> http://localhost:3000   (site)
+#   mongo    -> only with:  docker compose --profile local-db up --build   (otherwise use MongoDB Atlas via MONGODB_URI)
+#
+# Secrets are read from backend/.env (never baked into images). Production frontend hosting is Vercel (see docs/deployment.md).
+name: dinaidhigai
+
+services:
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    environment:
+      NODE_ENV: production
+      PORT: "4000"
+      APP_URL: ${APP_URL:-http://localhost:3000}
+      FRONTEND_URL: ${APP_URL:-http://localhost:3000}
+      # Uncomment when using the bundled local MongoDB instead of Atlas:
+      # MONGODB_URI: mongodb://mongo:27017/?replicaSet=rs0
+    ports:
+      - "4000:4000"
+    volumes:
+      - uploads:/app/.data # only used when Backblaze B2 is not configured
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BACKEND_URL: http://backend:4000
+        NEXT_PUBLIC_SITE_URL: ${APP_URL:-http://localhost:3000}
+    environment:
+      BACKEND_URL: http://backend:4000
+      NEXT_PUBLIC_SITE_URL: ${APP_URL:-http://localhost:3000}
+      SESSION_COOKIE: di_session
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mongo:
+    profiles: ["local-db"]
+    image: mongo:8
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval \"try{rs.status().ok}catch(e){rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}).ok}\""]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+volumes:
+  uploads:
+  mongo-data:

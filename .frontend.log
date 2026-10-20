@@ -1,0 +1,440 @@
+
+> dinaidhigai-frontend@0.1.0 dev
+> next dev
+
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.5:3000
+- Environments: .env.local
+✓ Ready in 1505ms
+✓ Running next.config.ts took 177ms
+
+✓ Generated AGENTS.md for AI agents. Set `agentRules: false` in next.config to disable.
+○ Compiling /[lang] ...
+ GET /ta 200 in 7.3s (next.js: 5.3s, proxy.ts: 240ms, application-code: 1701ms)
+ GET /en 200 in 1795ms (next.js: 91ms, proxy.ts: 10ms, application-code: 1695ms)
+ GET /ta/tamil-nadu 404 in 700ms (next.js: 621ms, proxy.ts: 14ms, application-code: 64ms)
+ GET /en/news/dummy 404 in 73ms (next.js: 19ms, proxy.ts: 7ms, application-code: 47ms)
+ GET /ta 200 in 1464ms (next.js: 22ms, proxy.ts: 8ms, application-code: 1434ms)
+ GET /ta 200 in 1416ms (next.js: 26ms, proxy.ts: 7ms, application-code: 1382ms)
+ GET /ta 200 in 1456ms (next.js: 23ms, proxy.ts: 4ms, application-code: 1429ms)
+ GET /en 200 in 1316ms (next.js: 17ms, proxy.ts: 5ms, application-code: 1294ms)
+ GET /ta 200 in 1968ms (next.js: 36ms, proxy.ts: 16ms, application-code: 1915ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /en 200 in 1741ms (next.js: 40ms, proxy.ts: 13ms, application-code: 1689ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /en/contact 404 in 122ms (next.js: 46ms, proxy.ts: 10ms, application-code: 66ms)
+ GET /en/contact 404 in 122ms (next.js: 30ms, proxy.ts: 8ms, application-code: 84ms)
+✓ Compiled in 348ms
+✓ Compiled in 307ms
+ GET /en/contact 404 in 707ms (next.js: 249ms, proxy.ts: 17ms, application-code: 442ms)
+ GET /en/contact 404 in 584ms (next.js: 188ms, proxy.ts: 48ms, application-code: 348ms)
+ GET /en/contact 404 in 597ms (next.js: 271ms, proxy.ts: 47ms, application-code: 279ms)
+ GET /ta 200 in 2.0s (next.js: 390ms, proxy.ts: 37ms, application-code: 1611ms)
+ GET /ta 200 in 1332ms (next.js: 121ms, proxy.ts: 48ms, application-code: 1164ms)
+ GET /ta 200 in 817ms (next.js: 142ms, proxy.ts: 42ms, application-code: 633ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /ta 200 in 1868ms (next.js: 57ms, proxy.ts: 45ms, application-code: 1765ms)
+ GET /ta/news/%E0%AE%9F%E0%AF%86%E0%AE%AE%E0%AF%8B-%E0%AE%9A%E0%AE%9F%E0%AF%8D%E0%AE%9F%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%87%E0%AE%B0%E0%AE%B5%E0%AF%88-%E0%AE%95%E0%AF%82%E0%AE%9F%E0%AF%8D%E0%AE%9F%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AF%8A%E0%AE%9F%E0%AE%B0%E0%AF%8D-%E0%AE%85%E0%AE%9F%E0%AF%81%E0%AE%A4%E0%AF%8D%E0%AE%A4-%E0%AE%B5%E0%AE%BE%E0%AE%B0%E0%AE%AE%E0%AF%8D-%E0%AE%A4%E0%AF%8A%E0%AE%9F%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%AE%E0%AF%8D 404 in 115ms (next.js: 51ms, proxy.ts: 16ms, application-code: 48ms)
+ GET /ta/news/%E0%AE%9F%E0%AF%86%E0%AE%AE%E0%AF%8B-%E0%AE%9A%E0%AE%9F%E0%AF%8D%E0%AE%9F%E0%AE%AA%E0%AF%8D%E0%AE%AA%E0%AF%87%E0%AE%B0%E0%AE%B5%E0%AF%88-%E0%AE%95%E0%AF%82%E0%AE%9F%E0%AF%8D%E0%AE%9F%E0%AE%A4%E0%AF%8D%E0%AE%A4%E0%AF%8A%E0%AE%9F%E0%AE%B0%E0%AF%8D-%E0%AE%85%E0%AE%9F%E0%AF%81%E0%AE%A4%E0%AF%8D%E0%AE%A4-%E0%AE%B5%E0%AE%BE%E0%AE%B0%E0%AE%AE%E0%AF%8D-%E0%AE%A4%E0%AF%8A%E0%AE%9F%E0%AE%95%E0%AF%8D%E0%AE%95%E0%AE%AE%E0%AF%8D 404 in 98ms (next.js: 25ms, proxy.ts: 7ms, application-code: 67ms)
+ GET /ta 200 in 1756ms (next.js: 35ms, proxy.ts: 9ms, application-code: 1712ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /ta 200 in 1815ms (next.js: 39ms, proxy.ts: 10ms, application-code: 1765ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+✓ Compiled in 27ms
+ GET /en/contact 404 in 847ms (next.js: 149ms, proxy.ts: 31ms, application-code: 667ms)
+ GET /ta 200 in 1306ms (next.js: 300ms, proxy.ts: 30ms, application-code: 976ms)
+ GET /ta 200 in 525ms (next.js: 37ms, proxy.ts: 59ms, application-code: 430ms)
+ GET /en/contact 404 in 221ms (next.js: 51ms, proxy.ts: 16ms, application-code: 155ms)
+ GET /ta 200 in 1346ms (next.js: 70ms, proxy.ts: 14ms, application-code: 1261ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /en 200 in 735ms (next.js: 26ms, proxy.ts: 5ms, application-code: 703ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /ta 200 in 764ms (next.js: 33ms, proxy.ts: 11ms, application-code: 720ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /en 200 in 687ms (next.js: 24ms, proxy.ts: 7ms, application-code: 656ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+⚠ Fast Refresh had to perform a full reload when ./components/site/MobileNav.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./components/site/MobileNav.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+✓ Compiled in 74ms
+⚠ Fast Refresh had to perform a full reload when ./components/site/MobileNav.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+    at ignore-listed frames {
+  digest: '3899551953'
+}
+⨯ Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+    at ignore-listed frames {
+  digest: '3899551953'
+}
+⚠ Fast Refresh had to perform a full reload when ./components/site/MobileNav.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./components/site/MobileNav.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload when ./components/site/MobileNav.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /en 500 in 3.2s (next.js: 57ms, proxy.ts: 7ms, application-code: 3.1s)
+ GET /ta 500 in 3.2s (next.js: 103ms, proxy.ts: 10ms, application-code: 3.1s)
+ GET /en/contact 404 in 3.2s (next.js: 1642ms, proxy.ts: 9ms, application-code: 1575ms)
+✓ Compiled in 5ms
+⨯ Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+    at ignore-listed frames {
+  digest: '3899551953'
+}
+ GET /en/contact 404 in 785ms (next.js: 301ms, proxy.ts: 19ms, application-code: 465ms)
+⨯ Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+    at ignore-listed frames {
+  digest: '3899551953'
+}
+ GET /ta 200 in 5.1s (next.js: 530ms, proxy.ts: 10ms, application-code: 4.6s)
+ GET /en 200 in 5.2s (next.js: 180ms, proxy.ts: 12ms, application-code: 5.0s)
+ GET /en 500 in 1948ms (next.js: 316ms, proxy.ts: 93ms, application-code: 1539ms)
+ GET /ta 500 in 1978ms (next.js: 145ms, proxy.ts: 20ms, application-code: 1814ms)
+⨯ Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+    at ignore-listed frames {
+  digest: '3899551953'
+}
+ GET /ta 200 in 2.9s (next.js: 57ms, proxy.ts: 282ms, application-code: 2.6s)
+ GET /ta 500 in 1721ms (next.js: 71ms, proxy.ts: 34ms, application-code: 1616ms)
+[browser] Uncaught Error: Element type is invalid: expected a string (for built-in components) or a class/function (for composite components) but got: undefined. You likely forgot to export your component from the file it's defined in, or you might have mixed up default and named imports.
+
+Check the render method of `Header`.
+    at Header (components\site\Header.tsx:83:9)
+    at LangLayout (app\[lang]\layout.tsx:45:13)
+  81 |           {t("nav.submit")}
+  82 |         </Link>
+> 83 |         <MobileNav lang={lang} items={items} extra={extra} labels={{ menu: t("nav.menu"), close: t("nav.close") }} />
+     |         ^
+  84 |       </div>
+  85 |
+  86 |       <nav aria-label="Sections" className="hidden border-y-2 border-ink bg-paper md:block">
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+⨯ ./components/site/Header.tsx:11:1
+Error: Module not found: Can't resolve './SocialIcons'
+  [90m 9 |[0m [36mimport[0m { [33mSearchToggle[0m } [36mfrom[0m [32m"./SearchToggle"[0m;
+  [90m10 |[0m [36mimport[0m { [33mLogoutButton[0m } [36mfrom[0m [32m"./LogoutButton"[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m { [33mSocialIcons[0m } [36mfrom[0m [32m"./SocialIcons"[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mexport[0m [36mfunction[0m [33mHeader[0m({ lang, settings, tree, user }: { lang: [33mLocale[0m; settings: [33mSiteSetti...[0m
+  [90m14 |[0m   [36mconst[0m t = makeT(lang);
+
+
+
+Import trace:
+  Server Component:
+    ./components/site/Header.tsx
+    ./app/[lang]/layout.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+✓ Compiled in 76ms
+ GET /en/contact 404 in 712ms (next.js: 228ms, proxy.ts: 28ms, application-code: 456ms)
+ GET /en/contact 404 in 122ms (next.js: 36ms, proxy.ts: 25ms, application-code: 61ms)
+ GET /ta 200 in 1888ms (next.js: 92ms, proxy.ts: 44ms, application-code: 1752ms)
+ GET /en 200 in 1887ms (next.js: 167ms, proxy.ts: 44ms, application-code: 1676ms)
+ GET /ta 200 in 1025ms (next.js: 26ms, proxy.ts: 22ms, application-code: 978ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+✓ Compiled in 70ms
+ GET /en/contact 404 in 488ms (next.js: 39ms, proxy.ts: 14ms, application-code: 435ms)
+ GET /en/contact 404 in 438ms (next.js: 42ms, proxy.ts: 122ms, application-code: 274ms)
+ GET /en 200 in 807ms (next.js: 152ms, proxy.ts: 7ms, application-code: 648ms)
+ GET /ta 200 in 819ms (next.js: 85ms, proxy.ts: 9ms, application-code: 724ms)
+ GET /ta 200 in 473ms (next.js: 85ms, proxy.ts: 122ms, application-code: 266ms)
+✓ Compiled in 107ms
+ GET /en/contact 404 in 418ms (next.js: 308ms, proxy.ts: 13ms, application-code: 97ms)
+ GET /en/contact 404 in 282ms (next.js: 173ms, proxy.ts: 15ms, application-code: 94ms)
+ GET /en 200 in 711ms (next.js: 110ms, proxy.ts: 15ms, application-code: 586ms)
+ GET /ta 200 in 710ms (next.js: 60ms, proxy.ts: 13ms, application-code: 638ms)
+ GET /ta 200 in 401ms (next.js: 56ms, proxy.ts: 90ms, application-code: 254ms)
+✓ Compiled in 87ms
+ GET /ta 200 in 1197ms (next.js: 21ms, proxy.ts: 4ms, application-code: 1172ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /ta 200 in 997ms (next.js: 22ms, proxy.ts: 4ms, application-code: 972ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+✓ Compiled in 79ms
+ GET /en/contact 404 in 416ms (next.js: 170ms, proxy.ts: 17ms, application-code: 228ms)
+ GET /en/contact 404 in 284ms (next.js: 87ms, proxy.ts: 10ms, application-code: 187ms)
+ GET /en 200 in 715ms (next.js: 102ms, proxy.ts: 18ms, application-code: 595ms)
+ GET /ta 200 in 724ms (next.js: 69ms, proxy.ts: 17ms, application-code: 638ms)
+ GET /ta 200 in 367ms (next.js: 36ms, proxy.ts: 55ms, application-code: 276ms)
+ GET /ta 200 in 2.4s (next.js: 23ms, proxy.ts: 4ms, application-code: 2.4s)
+ GET /en 200 in 1088ms (next.js: 22ms, proxy.ts: 5ms, application-code: 1061ms)
+ GET /ta 200 in 970ms (next.js: 18ms, proxy.ts: 5ms, application-code: 947ms)
+✓ Compiled in 101ms
+ GET /en/contact 404 in 505ms (next.js: 120ms, proxy.ts: 10ms, application-code: 375ms)
+ GET /en/contact 404 in 362ms (next.js: 35ms, proxy.ts: 148ms, application-code: 179ms)
+ GET /en 200 in 731ms (next.js: 69ms, proxy.ts: 10ms, application-code: 652ms)
+ GET /ta 200 in 735ms (next.js: 185ms, proxy.ts: 10ms, application-code: 540ms)
+ GET /ta 200 in 270ms (next.js: 70ms, proxy.ts: 34ms, application-code: 166ms)
+ GET /ta 200 in 1092ms (next.js: 24ms, proxy.ts: 5ms, application-code: 1063ms)
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+[browser] Encountered two children with the same key, `6ad7b7bc3b4411e904c47702`. Keys should be unique so that components maintain their identity across updates. Non-unique keys may cause children to be duplicated and/or omitted — the behavior is unsupported and could change in a future version. 
+ GET /ta 200 in 714ms (next.js: 15ms, proxy.ts: 3ms, application-code: 696ms)
+ GET /ta 200 in 727ms (next.js: 11ms, proxy.ts: 2ms, application-code: 714ms)
+ GET /ta 200 in 690ms (next.js: 9ms, proxy.ts: 2ms, application-code: 678ms)
+ GET /ta 200 in 937ms (next.js: 11ms, proxy.ts: 2ms, application-code: 924ms)
+ GET /ta 200 in 717ms (next.js: 9ms, proxy.ts: 2ms, application-code: 706ms)
+ GET /ta 200 in 755ms (next.js: 11ms, proxy.ts: 2.0ms, application-code: 741ms)
+ GET /ta 200 in 677ms (next.js: 9ms, proxy.ts: 2ms, application-code: 666ms)
+ GET /ta 200 in 721ms (next.js: 11ms, proxy.ts: 2ms, application-code: 708ms)
+ GET /ta 200 in 699ms (next.js: 10ms, proxy.ts: 2ms, application-code: 686ms)
+ GET /ta 200 in 704ms (next.js: 10ms, proxy.ts: 2ms, application-code: 692ms)
+ GET /ta 200 in 704ms (next.js: 10ms, proxy.ts: 2ms, application-code: 692ms)
+ GET /ta 200 in 681ms (next.js: 10ms, proxy.ts: 2ms, application-code: 670ms)
+ GET /ta 200 in 702ms (next.js: 11ms, proxy.ts: 2ms, application-code: 688ms)
+ GET /en 200 in 755ms (next.js: 10ms, proxy.ts: 2ms, application-code: 743ms)
+ GET /en 200 in 924ms (next.js: 10ms, proxy.ts: 2ms, application-code: 912ms)
+ GET /en 200 in 1040ms (next.js: 26ms, proxy.ts: 6ms, application-code: 1008ms)
+ GET /en 200 in 965ms (next.js: 23ms, proxy.ts: 6ms, application-code: 936ms)
+ GET /en 200 in 1092ms (next.js: 28ms, proxy.ts: 6ms, application-code: 1057ms)
+ GET /en 200 in 1188ms (next.js: 30ms, proxy.ts: 11ms, application-code: 1148ms)
+ GET /en 200 in 1142ms (next.js: 27ms, proxy.ts: 8ms, application-code: 1106ms)
+ GET /en 200 in 1346ms (next.js: 25ms, proxy.ts: 7ms, application-code: 1315ms)
+ GET /en 200 in 1217ms (next.js: 31ms, proxy.ts: 7ms, application-code: 1179ms)
+ GET /en 200 in 1059ms (next.js: 24ms, proxy.ts: 6ms, application-code: 1030ms)
+ GET /en 200 in 1035ms (next.js: 26ms, proxy.ts: 6ms, application-code: 1002ms)
+ GET /en 200 in 1115ms (next.js: 26ms, proxy.ts: 8ms, application-code: 1080ms)
+ GET /en 200 in 1064ms (next.js: 23ms, proxy.ts: 5ms, application-code: 1036ms)
+✓ Compiled in 93ms
+ GET /ta 200 in 1053ms (next.js: 34ms, proxy.ts: 6ms, application-code: 1014ms)
+ GET /ta 200 in 982ms (next.js: 26ms, proxy.ts: 5ms, application-code: 951ms)
+ GET /ta 200 in 940ms (next.js: 26ms, proxy.ts: 6ms, application-code: 908ms)
+ GET /ta 200 in 680ms (next.js: 11ms, proxy.ts: 2ms, application-code: 667ms)
+ GET /ta 200 in 689ms (next.js: 11ms, proxy.ts: 3ms, application-code: 675ms)
+ GET /ta 200 in 678ms (next.js: 10ms, proxy.ts: 2ms, application-code: 666ms)
+ GET /ta 200 in 694ms (next.js: 10ms, proxy.ts: 1.9ms, application-code: 682ms)
+ GET /ta 200 in 682ms (next.js: 10ms, proxy.ts: 2ms, application-code: 670ms)
+ GET /ta 200 in 781ms (next.js: 10ms, proxy.ts: 2ms, application-code: 769ms)
+ GET /ta 200 in 723ms (next.js: 9ms, proxy.ts: 2ms, application-code: 711ms)
+ GET /ta 200 in 721ms (next.js: 10ms, proxy.ts: 2ms, application-code: 709ms)
+ GET /ta 200 in 737ms (next.js: 10ms, proxy.ts: 2ms, application-code: 724ms)
+ GET /ta 200 in 738ms (next.js: 11ms, proxy.ts: 2ms, application-code: 726ms)
+ GET /ta 200 in 768ms (next.js: 14ms, proxy.ts: 3ms, application-code: 751ms)
+ GET /ta 200 in 803ms (next.js: 14ms, proxy.ts: 3ms, application-code: 787ms)
+ GET /ta 200 in 753ms (next.js: 12ms, proxy.ts: 3ms, application-code: 737ms)
+ GET /ta 200 in 777ms (next.js: 14ms, proxy.ts: 3ms, application-code: 759ms)
+✓ Compiled in 49ms
+ GET /ta 200 in 696ms (next.js: 19ms, proxy.ts: 2ms, application-code: 674ms)
+ GET /ta 200 in 693ms (next.js: 11ms, proxy.ts: 2ms, application-code: 680ms)
+ GET /ta 200 in 694ms (next.js: 10ms, proxy.ts: 3ms, application-code: 681ms)
+ GET /ta 200 in 695ms (next.js: 10ms, proxy.ts: 3ms, application-code: 683ms)
+ GET /ta 200 in 679ms (next.js: 10ms, proxy.ts: 1.9ms, application-code: 667ms)
+ GET /ta 200 in 686ms (next.js: 10ms, proxy.ts: 1.9ms, application-code: 674ms)
+ GET /ta 200 in 924ms (next.js: 10ms, proxy.ts: 2ms, application-code: 911ms)
+ GET /ta 200 in 689ms (next.js: 10ms, proxy.ts: 2ms, application-code: 676ms)
+ GET /ta 200 in 682ms (next.js: 10ms, proxy.ts: 2ms, application-code: 670ms)
+ GET /ta 200 in 739ms (next.js: 11ms, proxy.ts: 2ms, application-code: 726ms)
+ GET /ta 200 in 1131ms (next.js: 11ms, proxy.ts: 2ms, application-code: 1118ms)
+ GET /ta 200 in 716ms (next.js: 10ms, proxy.ts: 2ms, application-code: 704ms)
+ GET /ta 200 in 730ms (next.js: 10ms, proxy.ts: 3ms, application-code: 718ms)
+ GET /ta 200 in 716ms (next.js: 9ms, proxy.ts: 2.0ms, application-code: 705ms)
+ GET /ta 200 in 734ms (next.js: 10ms, proxy.ts: 2ms, application-code: 722ms)
+ GET /ta 200 in 744ms (next.js: 9ms, proxy.ts: 2ms, application-code: 733ms)
+ GET /en 200 in 716ms (next.js: 10ms, proxy.ts: 2ms, application-code: 704ms)
+ GET /en 200 in 753ms (next.js: 12ms, proxy.ts: 3ms, application-code: 737ms)
+ GET /en 200 in 737ms (next.js: 10ms, proxy.ts: 2ms, application-code: 725ms)
+ GET /en 200 in 718ms (next.js: 10ms, proxy.ts: 3ms, application-code: 706ms)
+ GET /en 200 in 788ms (next.js: 10ms, proxy.ts: 2ms, application-code: 776ms)
+ GET /en 200 in 750ms (next.js: 10ms, proxy.ts: 2ms, application-code: 738ms)
+ GET /en 200 in 722ms (next.js: 10ms, proxy.ts: 1.9ms, application-code: 711ms)
+ GET /en 200 in 837ms (next.js: 11ms, proxy.ts: 3ms, application-code: 822ms)
+ GET /en 200 in 733ms (next.js: 10ms, proxy.ts: 2ms, application-code: 721ms)
+ GET /en 200 in 772ms (next.js: 10ms, proxy.ts: 2ms, application-code: 759ms)
+ GET /en 200 in 720ms (next.js: 10ms, proxy.ts: 2ms, application-code: 708ms)
+ GET /en 200 in 740ms (next.js: 11ms, proxy.ts: 2ms, application-code: 727ms)
+ GET /en 200 in 731ms (next.js: 10ms, proxy.ts: 2.0ms, application-code: 719ms)
+⚠ Found a change in next.config.ts. Restarting the server to apply the changes...
+▲ Next.js 16.4.2 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.1.5:3000
+- Environments: .env.local
+✓ Ready in 580ms
+✓ Running next.config.ts took 42ms
+
+ GET /en 200 in 4.7s (next.js: 1413ms, proxy.ts: 300ms, application-code: 3.0s)
+ GET /en/account/submit 404 in 161ms (next.js: 85ms, proxy.ts: 13ms, application-code: 63ms)
+ GET /en/account/submit 404 in 106ms (next.js: 21ms, proxy.ts: 6ms, application-code: 78ms)
+ GET /en 200 in 1011ms (next.js: 27ms, proxy.ts: 6ms, application-code: 978ms)
+ GET /en/login 404 in 101ms (next.js: 33ms, proxy.ts: 12ms, application-code: 55ms)
+ GET /en/login 404 in 107ms (next.js: 27ms, proxy.ts: 7ms, application-code: 73ms)
