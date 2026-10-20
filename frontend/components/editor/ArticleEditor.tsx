@@ -93,6 +93,15 @@ const fromArticle = (a: EditArticle): Form => ({
   priority: a.priority,
 });
 
+/** Which script a piece of text is mostly written in: used to catch Tamil typed into the English tab (and the reverse). */
+const scriptOf = (html: string): "ta" | "en" | null => {
+  const t = html.replace(/<[^>]+>/g, " ");
+  const ta = (t.match(/[஀-௿]/g) ?? []).length;
+  const la = (t.match(/[A-Za-z]/g) ?? []).length;
+  if (ta + la < 12) return null; // too little text to judge
+  return ta > la ? "ta" : "en";
+};
+
 const words = (html: string) => {
   const t = html.replace(/<[^>]+>/g, " ").replace(/&nbsp;/g, " ").trim();
   return t ? t.split(/\s+/).length : 0;
@@ -262,6 +271,26 @@ export function ArticleEditor({
 
   const e = errors;
   const L = tab;
+  const other: Lang2 = L === "ta" ? "en" : "ta";
+  const FIELDS = ["title", "subtitle", "excerpt", "body"] as const;
+  // fields in this tab whose text is mostly in the other language's script
+  const misplaced = FIELDS.filter((f) => scriptOf(form[f][L]) === other);
+
+  function moveMisplaced() {
+    const blocked = misplaced.some((f) => form[f][other].trim() !== "");
+    if (blocked) return setTop({ kind: "error", text: t("submit.move_blocked") });
+    const patch: Partial<Form> = {};
+    for (const f of misplaced) {
+      (patch as Record<string, unknown>)[f] = { ...form[f], [other]: form[f][L], [L]: "" };
+      if (f === "body") {
+        handles[other].current?.setHtml(form.body[L]);
+        handles[L].current?.setHtml("");
+      }
+    }
+    set(patch);
+    setTab(other);
+    setTop({ kind: "ok", text: t("submit.moved") });
+  }
   const wc = words(form.body[L]);
   const flat = tree.flatMap((n) => [{ id: n.id, name: n.name[lang], depth: 0 }, ...n.children.map((c) => ({ id: c.id, name: c.name[lang], depth: 1 }))]);
   const editorLabels = { insertImage: t("submit.insert_image"), uploading: t("submit.uploading"), bold: "Bold", italic: "Italic", h2: "Heading", h3: "Subheading", bullets: "Bulleted list", numbers: "Numbered list", quote: "Quote", link: "Link", undo: "Undo", redo: "Redo" };
@@ -304,6 +333,15 @@ export function ArticleEditor({
             );
           })}
         </div>
+
+        {misplaced.length > 0 && editable && (
+          <div role="note" className="mt-3 flex flex-wrap items-center gap-3 rounded border border-warn bg-paper2 p-3 text-sm">
+            <span className="min-w-0 flex-1">{t(L === "en" ? "submit.wrong_script_en" : "submit.wrong_script_ta")}</span>
+            <button type="button" className="rounded border border-brand px-3 py-1.5 font-bold text-brand hover:bg-paper" onClick={moveMisplaced}>
+              {t("submit.move_other")}
+            </button>
+          </div>
+        )}
 
         {(["ta", "en"] as const).map((l) => (
           <div key={l} role="tabpanel" hidden={tab !== l} className="space-y-4 pt-4">
