@@ -1,8 +1,8 @@
-﻿# syntax=docker/dockerfile:1.7
+# syntax=docker/dockerfile:1.7
 # Dina Idhigai API (Express + MongoDB + Backblaze B2)
 
 ############ 1) dependencies (incl. dev, for the TypeScript build)
-FROM node:24-bookworm-slim AS deps
+FROM node:26-bookworm-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
@@ -14,13 +14,13 @@ COPY src ./src
 RUN npm run build
 
 ############ 3) production-only dependencies
-FROM node:24-bookworm-slim AS prod-deps
+FROM node:26-bookworm-slim AS prod-deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci --omit=dev
 
 ############ 4) runtime
-FROM node:24-bookworm-slim AS runtime
+FROM node:26-bookworm-slim AS runtime
 ENV NODE_ENV=production \
     PORT=4000
 WORKDIR /app
