@@ -68,3 +68,38 @@ docker compose --profile local-db up --build   # also starts a local MongoDB rep
 - Rotate any credential that was ever pasted into chat or committed. `.env` files are git-ignored.
 - Restrict the Atlas IP access list to your backend's egress IPs.
 - Review `audit` logs under Admin → Audit after go-live.
+
+## 4. CI/CD pipeline (GitHub Actions)
+
+| Workflow | Trigger | What it does |
+| --- | --- | --- |
+| `ci.yml` | every PR, every push to `main` | Backend: type-check, 11 integration tests against a real MongoDB, build — on **Node 20 (Catalyst)** and **Node 24**. Frontend: shared-modules sync check, lint, type-check, production build. Security: `npm audit` (prod deps, fail on high) + gitleaks secret scan over full history. Docker: builds both images. A final **`CI passed`** job is the single check to require. |
+| `deploy-backend.yml` | push to `main` touching `backend/**`; manual | Re-runs CI, builds the Linux-x64 AppSail package with runtime config taken from GitHub secrets, deploys with the Catalyst CLI, then smoke-tests `/api/health` (requires `"db":"up"`). Secrets are deleted from the runner afterwards. |
+| `scheduled-publish.yml` | every 5 min; manual | `POST /api/cron/publish-scheduled` with the cron secret (finalises scheduled articles, cleans unused uploads). |
+| `dependabot.yml` | weekly | Dependency PRs for npm (backend, frontend), Docker and Actions. |
+
+**Frontend deploys are handled by Vercel's Git integration** (preview on every PR, production on `main`). To make Vercel
+wait for CI, enable *Settings → Git → "Require status checks / Deployment Checks"* in Vercel, or protect `main` in GitHub.
+
+### One-time setup
+
+1. **Branch protection** (GitHub → Settings → Branches → `main`): require a pull request and the status check **`CI passed`**.
+2. **Catalyst token** — on your machine, once: `catalyst login` then `catalyst token:generate`. Save the token as the secret `CATALYST_TOKEN`.
+3. **Repository secrets** (Settings → Secrets and variables → Actions → *Secrets*):
+   `CATALYST_TOKEN`, `MONGODB_URI`, `CRON_SECRET`, `B2_KEY_ID`, `B2_APPLICATION_KEY`, `AI_API_KEYS` (comma-separated), and optionally `SMTP_USER`, `SMTP_PASSWORD`.
+4. **Repository variables** (same page → *Variables*):
+
+   | Variable | Example |
+   | --- | --- |
+   | `BACKEND_URL` | `https://dinaidhugai-50047009098.development.catalystappsail.in` (the deploy job stays skipped until this exists) |
+   | `SITE_URL` | your Vercel / custom domain, e.g. `https://www.example.com` |
+   | `MONGODB_DB` | `dinaidhigai` |
+   | `MONGODB_DNS_SERVERS` | `8.8.8.8,1.1.1.1` (only if SRV lookups fail) |
+   | `B2_ENDPOINT`, `B2_REGION`, `B2_BUCKET` | from your Backblaze bucket |
+   | `AI_PROVIDER`, `AI_MODEL` | `groq`, `openai/gpt-oss-120b` |
+   | `SMTP_HOST`, `SMTP_PORT`, `EMAIL_FROM` | optional |
+5. Optional: create a GitHub **Environment** named `catalyst-development` and add required reviewers for manual deploy approval.
+
+### Rollback
+Re-run the `Deploy backend` workflow on a previous commit (Actions → run → *Re-run*), or `git revert` and push. Vercel keeps every
+deployment: use *Instant Rollback* in the Vercel dashboard for the frontend.

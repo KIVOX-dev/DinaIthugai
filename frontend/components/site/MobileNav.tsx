@@ -1,12 +1,11 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import type { Locale } from "@/lib/shared/i18n";
 
 export type NavItem = { href: string; label: string; children?: { href: string; label: string }[] };
 
 /** Hamburger + left slide-out drawer (all screen sizes) with focus management and Escape-to-close. */
-export function MenuDrawer({ lang, items, extra, labels }: { lang: Locale; items: NavItem[]; extra: NavItem[]; labels: { menu: string; close: string; sections: string } }) {
+export function MenuDrawer({ items, extra, labels }: { items: NavItem[]; extra: NavItem[]; labels: { menu: string; close: string; sections: string } }) {
   const [open, setOpen] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);

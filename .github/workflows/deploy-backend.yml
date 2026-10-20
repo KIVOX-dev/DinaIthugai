@@ -1,0 +1,100 @@
+name: Deploy backend (Catalyst AppSail)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "backend/**"
+      - "catalyst.json"
+      - ".catalystrc"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch:
+
+# Never run two deploys at once, and never cancel one halfway through.
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Build and deploy AppSail
+    needs: ci
+    # Skipped until the repository variable BACKEND_URL exists (see docs/deployment.md, CI/CD section).
+    if: ${{ vars.BACKEND_URL != '' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    # Create this environment in GitHub (Settings > Environments) to add required reviewers if you want manual approval.
+    environment:
+      name: catalyst-development
+      url: ${{ vars.BACKEND_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Write runtime configuration from GitHub secrets
+        working-directory: backend
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          MONGODB_DB: ${{ vars.MONGODB_DB || 'dinaidhigai' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          B2_ENDPOINT: ${{ vars.B2_ENDPOINT }}
+          B2_REGION: ${{ vars.B2_REGION }}
+          B2_BUCKET: ${{ vars.B2_BUCKET }}
+          B2_KEY_ID: ${{ secrets.B2_KEY_ID }}
+          B2_APPLICATION_KEY: ${{ secrets.B2_APPLICATION_KEY }}
+          AI_PROVIDER: ${{ vars.AI_PROVIDER || 'groq' }}
+          AI_MODEL: ${{ vars.AI_MODEL || 'openai/gpt-oss-120b' }}
+          AI_API_KEYS: ${{ secrets.AI_API_KEYS }}
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_FROM: ${{ vars.EMAIL_FROM }}
+          MONGODB_DNS_SERVERS: ${{ vars.MONGODB_DNS_SERVERS }}
+        run: |
+          : > .env
+          for k in MONGODB_URI MONGODB_DB CRON_SECRET B2_ENDPOINT B2_REGION B2_BUCKET B2_KEY_ID B2_APPLICATION_KEY AI_PROVIDER AI_MODEL AI_API_KEYS SMTP_HOST SMTP_PORT SMTP_USER SMTP_PASSWORD EMAIL_FROM MONGODB_DNS_SERVERS; do
+            v="${!k}"; [ -n "$v" ] && printf '%s=%s\n' "$k" "$v" >> .env
+          done
+          grep -q '^MONGODB_URI=' .env || { echo "::error::MONGODB_URI secret is not set"; exit 1; }
+
+      - name: Build deploy package (compiled for linux-x64)
+        working-directory: backend
+        run: npm run build:appsail -- --with-env --site-url "${{ vars.SITE_URL }}"
+
+      - name: Install Catalyst CLI
+        run: npm install -g zcatalyst-cli@1.28.0
+
+      - name: Deploy to Catalyst AppSail
+        env:
+          CATALYST_TOKEN: ${{ secrets.CATALYST_TOKEN }}
+        run: catalyst deploy --only appsail:Dinaidhugai --token "$CATALYST_TOKEN"
+
+      - name: Smoke test
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+        run: |
+          for i in $(seq 1 12); do
+            code=$(curl -s -o /tmp/health.json -w '%{http_code}' "$BACKEND_URL/api/health" || true)
+            if [ "$code" = "200" ] && grep -q '"db":"up"' /tmp/health.json; then echo "healthy after $i attempt(s)"; exit 0; fi
+            echo "attempt $i: HTTP $code"; sleep 10
+          done
+          echo "::error::Backend did not become healthy"; cat /tmp/health.json || true; exit 1
+
+      - name: Remove secrets from the runner
+        if: always()
+        run: rm -rf backend/.env appsail-nodejs

@@ -15,7 +15,12 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Promise<Metadata> {
   const { lang } = await params;
   if (!isLocale(lang)) return {};
-  const { settings: s } = await apiGet<SiteData>("/public/site", { lang });
+  let s: SiteData["settings"];
+  try {
+    s = (await apiGet<SiteData>("/public/site", { lang })).settings;
+  } catch {
+    return { metadataBase: new URL(SITE_URL), title: lang === "ta" ? "தின இதிகை" : "Dina Idhigai" }; // API unreachable: still render a sane <head>
+  }
   return {
     metadataBase: new URL(SITE_URL),
     title: { default: `${s.siteName[lang]} — ${s.tagline[lang]}`, template: `%s | ${s.siteName[lang]}` },
@@ -28,9 +33,28 @@ export async function generateMetadata({ params }: LayoutProps<"/[lang]">): Prom
 export default async function LangLayout({ children, params }: LayoutProps<"/[lang]">) {
   const { lang } = await params;
   if (!isLocale(lang)) notFound();
-  const [site, user] = await Promise.all([apiGet<SiteData>("/public/site", { lang }), getCurrentUser()]);
-  const { settings, tree } = site;
   const t = makeT(lang);
+  let site: SiteData;
+  let user: Awaited<ReturnType<typeof getCurrentUser>>;
+  try {
+    [site, user] = await Promise.all([apiGet<SiteData>("/public/site", { lang }), getCurrentUser()]);
+  } catch (e) {
+    console.error("[layout] backend unavailable", e instanceof Error ? e.message : e);
+    return (
+      <html lang={lang} className={fontVars}>
+        <body>
+          <main className="mx-auto max-w-xl px-4 py-24 text-center">
+            <h1 className="headline text-3xl">{t("error.title")}</h1>
+            <p className="mt-3 text-ink2">{lang === "ta" ? "செய்திகளை ஏற்ற இயலவில்லை. சிறிது நேரத்தில் மீண்டும் முயலவும்." : "We couldn't load the news right now. Please try again in a moment."}</p>
+            <a href={`/${lang}`} className="mt-6 inline-block rounded bg-brand px-4 py-2 font-bold text-brand-ink no-underline">
+              {t("error.retry")}
+            </a>
+          </main>
+        </body>
+      </html>
+    );
+  }
+  const { settings, tree } = site;
   const maintenance = settings.maintenanceMode && !isStaff(user);
   return (
     <html lang={lang} className={fontVars}>

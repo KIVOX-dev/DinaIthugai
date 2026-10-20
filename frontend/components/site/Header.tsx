@@ -91,7 +91,7 @@ export function Header({ lang, settings, tree, user }: { lang: Locale; settings:
       {/* Row 2: full-width grey navigation bar: menu, sections, search */}
       <nav aria-label="Sections" className="bg-[#6e6a67] text-white">
         <div className="mx-auto flex max-w-[1500px] 2xl:max-w-[1800px] items-center px-2">
-          <MenuDrawer lang={lang} items={drawer} extra={extra} labels={{ menu: t("nav.menu"), close: t("nav.close"), sections: t("footer.sections") }} />
+          <MenuDrawer items={drawer} extra={extra} labels={{ menu: t("nav.menu"), close: t("nav.close"), sections: t("footer.sections") }} />
           <ul className="no-scrollbar flex flex-1 items-stretch justify-start gap-1 overflow-x-auto md:justify-center lg:gap-3">
             {primary.map((n) => (
               <li key={n.slug} className="group relative shrink-0">

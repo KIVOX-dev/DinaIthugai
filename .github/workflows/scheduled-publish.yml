@@ -1,0 +1,28 @@
+name: Scheduled publishing
+
+# Finalises scheduled articles (sets status, sends notifications) and cleans up unused uploads.
+# Articles become publicly visible at their scheduled time even if this job is late (visibility is time-based).
+# GitHub's scheduler is best-effort, with a 5-minute minimum interval.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: scheduled-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Call the backend cron endpoint
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          test -n "$BACKEND_URL" && test -n "$CRON_SECRET" || { echo "BACKEND_URL variable / CRON_SECRET secret not set"; exit 1; }
+          curl -fsS --retry 3 --retry-delay 5 -X POST -H "Authorization: Bearer $CRON_SECRET" "$BACKEND_URL/api/cron/publish-scheduled"
