@@ -70,8 +70,11 @@ html[lang="ta"] body {
   outline: 3px solid var(--brand);
   outline-offset: 2px;
 }
-a {
-  color: inherit;
+/* In the base layer so Tailwind utilities such as text-white still win on links. */
+@layer base {
+  a {
+    color: inherit;
+  }
 }
 
 .headline {

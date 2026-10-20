@@ -218,7 +218,8 @@ export async function searchArticles(lang: Locale, p: { q?: string; category?: s
   if (textTotal > 0) return { items: textItems, total: textTotal, page, pages: Math.max(1, Math.ceil(textTotal / PAGE_SIZE)), mode: "text" as const };
   // 2) Fallback: case-insensitive substring match, which catches Tamil inflected forms the text index cannot.
   const rx = new RegExp(escapeRegex(q), "i");
-  const rxFilter: Filter = { ...base, $or: [{ [`title.${lang}`]: rx }, { [`excerpt.${lang}`]: rx }, { [`searchText.${lang}`]: rx }] };
+  // $and, not a spread: base already carries the visibility $or, which a second $or key would silently replace.
+  const rxFilter: Filter = { $and: [base, { $or: [{ [`title.${lang}`]: rx }, { [`excerpt.${lang}`]: rx }, { [`searchText.${lang}`]: rx }] }] };
   const [items, total] = await Promise.all([findCards(rxFilter, { lang, skip }), Article.countDocuments(rxFilter)]);
   return { items, total, page, pages: Math.max(1, Math.ceil(total / PAGE_SIZE)), mode: "substring" as const };
 }
@@ -292,7 +293,7 @@ export async function getPublicArticle(lang: Locale, slug: string) {
 export async function getRelatedAndAdjacent(lang: Locale, a: { id: string; category?: string; tags: string[]; publishedAt?: Date }) {
   const vis = { ...visibleFilter(), ...withLang(lang), _id: { $ne: a.id } };
   const related = await findCards(
-    { ...vis, $or: [...(a.category ? [{ category: a.category }] : []), ...(a.tags.length ? [{ tags: { $in: a.tags } }] : [])] },
+    { $and: [vis, { $or: [...(a.category ? [{ category: a.category }] : []), ...(a.tags.length ? [{ tags: { $in: a.tags } }] : [])] }] },
     { lang, limit: 4 },
   );
   const at = a.publishedAt ?? new Date();

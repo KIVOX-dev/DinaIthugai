@@ -19,3 +19,28 @@ export async function api<T = unknown>(path: string, init: { method?: string; bo
     return { ok: false, status: 0, error: "Network error", code: "network" };
   }
 }
+
+export type UploadedMedia = { id: string; url: string; thumb: string; caption: { ta?: string; en?: string }; credit?: string };
+
+/** Multipart upload with progress (fetch has no upload-progress events, so XHR is used). */
+export function uploadFile(file: File, onProgress?: (pct: number) => void, meta?: Record<string, string>): Promise<ApiResult<{ media: UploadedMedia }>> {
+  return new Promise((resolve) => {
+    const fd = new FormData();
+    fd.append("file", file);
+    for (const [k, v] of Object.entries(meta ?? {})) if (v) fd.append(k, v);
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/media");
+    xhr.withCredentials = true;
+    xhr.upload.onprogress = (e) => e.lengthComputable && onProgress?.(Math.round((e.loaded / e.total) * 100));
+    xhr.onerror = () => resolve({ ok: false, status: 0, error: "Network error", code: "network" });
+    xhr.onload = () => {
+      let json: Record<string, unknown> = {};
+      try {
+        json = JSON.parse(xhr.responseText || "{}");
+      } catch {}
+      if (xhr.status >= 200 && xhr.status < 300) resolve({ ok: true, data: json as { media: UploadedMedia } });
+      else resolve({ ok: false, status: xhr.status, error: String(json.error ?? "Upload failed"), code: json.code as string | undefined, fieldErrors: json.fieldErrors as Record<string, string> | undefined });
+    };
+    xhr.send(fd);
+  });
+}

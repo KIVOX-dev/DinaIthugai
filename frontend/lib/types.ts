@@ -101,3 +101,53 @@ export type ArticleView = {
 };
 
 export const articleHref = (lang: Locale, slug: string) => `/${lang}/news/${encodeURIComponent(slug)}`;
+
+export type MediaItem = { id: string; url: string; thumb: string; caption: { ta?: string; en?: string }; credit?: string; width?: number; height?: number };
+
+/** Editor payload returned by GET /api/articles/:id */
+export type EditArticle = {
+  id: string;
+  status: string;
+  source: "staff" | "community";
+  revision: number;
+  lockedRevision?: number;
+  preferredLanguage: "ta" | "en";
+  title: { ta: string; en: string };
+  subtitle: { ta: string; en: string };
+  excerpt: { ta: string; en: string };
+  body: { ta: string; en: string };
+  seoTitle: { ta: string; en: string };
+  seoDescription: { ta: string; en: string };
+  slug: { ta: string; en: string };
+  category: string;
+  tags: { id: string; slug: string; name: string }[];
+  location: string;
+  authorNotes: string;
+  declaration: boolean;
+  reviewNote?: string;
+  sources: { label: string; url: string }[];
+  featuredImage: string;
+  featuredCaption: { ta: string; en: string };
+  featuredCredit: string;
+  media: MediaItem[];
+  authorName: string;
+  authorId: string;
+  authorLabel?: string;
+  canonicalUrl: string;
+  edition: string;
+  featured: boolean;
+  trending: boolean;
+  breaking: boolean;
+  priority: number;
+  scheduledAt?: string;
+  publishedAt?: string;
+  availability: { ta: boolean; en: boolean };
+  submitter?: { id: string; name: string; email?: string };
+  assignedEditor?: { id: string; name: string };
+  internalNotes: { note: string; at: string }[];
+  history: { id: string; action: string; from?: string; to?: string; reason?: string; by: string; at: string; revision?: number }[];
+  revisions: { revision: number; kind: string; status?: string; note?: string; by: string; at: string; snapshot: { title: { ta: string; en: string }; body: { ta: string; en: string } } }[];
+  can: { edit: boolean; owner: boolean; review: boolean; approve: boolean; publish: boolean; schedule: boolean; unpublish: boolean; delete: boolean; feature: boolean; ai: boolean; media: boolean };
+  previewUrls: { ta?: string; en?: string };
+  featuredUrl?: string;
+};

@@ -1,5 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import type { Locale } from "./shared/i18n";
 import type { Principal } from "./types";
 
 export const BACKEND_URL = (process.env.BACKEND_URL ?? "http://localhost:4000").replace(/\/$/, "");
@@ -44,4 +46,11 @@ export async function getCurrentUser(): Promise<Principal | null> {
   } catch {
     return null;
   }
+}
+
+/** Page guard: send anonymous visitors to the login page, returning here afterwards. */
+export async function requireUserPage(lang: Locale, next: string): Promise<Principal> {
+  const u = await getCurrentUser();
+  if (!u) redirect(`/${lang}/login?next=${encodeURIComponent(next)}`);
+  return u;
 }

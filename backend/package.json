@@ -13,6 +13,8 @@
     "db:init": "tsx --env-file=.env scripts/db-init.ts",
     "seed": "tsx --env-file=.env scripts/seed.ts",
     "build:appsail": "node scripts/build-appsail.mjs",
+    "dev:reset-ratelimits": "tsx --env-file=.env scripts/reset-ratelimits.ts",
+    "dev:last-email": "tsx --env-file=.env scripts/last-email.ts",
     "admin:create": "tsx --env-file=.env scripts/create-admin.ts"
   },
   "dependencies": {
