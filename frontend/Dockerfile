@@ -2,13 +2,13 @@
 # Dina Idhigai web (Next.js, standalone output). Production hosting is Vercel; this image is for self-hosting / local compose.
 
 ############ 1) dependencies
-FROM node:24-bookworm-slim AS deps
+FROM node:26-bookworm-slim AS deps
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN --mount=type=cache,target=/root/.npm npm ci
 
 ############ 2) build
-FROM node:24-bookworm-slim AS build
+FROM node:26-bookworm-slim AS build
 WORKDIR /app
 # These are read at BUILD time: next.config.ts bakes the /api/* rewrite target into the routes manifest.
 ARG BACKEND_URL=http://backend:4000
@@ -22,7 +22,7 @@ COPY . .
 RUN npm run build
 
 ############ 3) runtime
-FROM node:24-bookworm-slim AS runtime
+FROM node:26-bookworm-slim AS runtime
 ENV NODE_ENV=production \
     PORT=3000 \
     HOSTNAME=0.0.0.0 \
