@@ -15,6 +15,13 @@ export function createApp() {
   app.use(express.json({ limit: "2mb" }));
   app.use(cookieParser());
 
+  // Friendly landing for anyone who opens the API origin in a browser (the website itself is served by the frontend).
+  const info = (_req: express.Request, res: express.Response) => {
+    res.json({ service: "dinaidhigai-api", status: "running", health: "/api/health", docs: "This is the JSON API; the website is served by the frontend." });
+  };
+  app.get("/", info);
+  app.get("/api", info);
+
   app.get("/api/health", async (_req, res) => {
     try {
       await connectDB();
