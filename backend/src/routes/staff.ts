@@ -208,7 +208,7 @@ cronRouter.all("/import-dinamalar", async (req, res) => {
   const secret = env().CRON_SECRET;
   const given = req.headers.authorization?.replace(/^Bearer /, "");
   if (!secret || given !== secret) throw new ServiceError("unauthorized", "Unauthorized");
-  res.json(await importDinamalar({ limit: 8 }));
+  res.json(await importDinamalar({ limit: 3 }));
 });
 
 void User;

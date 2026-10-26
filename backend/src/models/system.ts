@@ -33,7 +33,7 @@ const settingsSchema = new Schema<any>(
   {
     key: { type: String, default: "site", unique: true },
     siteName: { ta: { type: String, default: "தின இதிகை" }, en: { type: String, default: "Dina Idhigai" } },
-    tagline: { ta: { type: String, default: "உண்மை. உடனுக்குடன்." }, en: { type: String, default: "The truth, as it happens." } },
+    tagline: { ta: { type: String, default: "NOTHING MORE THAN NEWS" }, en: { type: String, default: "NOTHING MORE THAN NEWS" } },
     logoMediaId: { type: Schema.Types.ObjectId, ref: "MediaAsset" },
     defaultLocale: { type: String, enum: ["ta", "en"], default: "ta" },
     enabledLocales: { type: [String], default: ["ta", "en"] },

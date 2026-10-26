@@ -34,6 +34,7 @@ const articleSchema = new Schema(
     featuredCredit: { type: String, maxlength: 200 },
     media: [{ type: Schema.Types.ObjectId, ref: "MediaAsset" }], // every image referenced by the body
 
+    importedFrom: { url: { type: String, maxlength: 500, index: true } }, // internal only (dedupe of partner imports); never exposed publicly
     sources: [{ _id: false, label: { type: String, maxlength: 200 }, url: { type: String, maxlength: 500 } }],
     credits: { type: String, maxlength: 400 },
     canonicalUrl: { type: String, maxlength: 500 },

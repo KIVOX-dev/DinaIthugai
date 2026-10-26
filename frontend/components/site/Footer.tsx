@@ -20,9 +20,20 @@ export function Footer({ lang, settings, tree }: { lang: Locale; settings: SiteS
       <div className="mx-auto max-w-[1500px] 2xl:max-w-[1800px] px-4 py-10">
         <div className="grid gap-10 md:grid-cols-12">
           <div className="md:col-span-4">
-            <Link href={`/${lang}`} className="inline-block rounded bg-white px-3 py-2" aria-label={settings.siteName[lang] ?? undefined}>
+            <Link href={`/${lang}`} className="inline-block" aria-label={settings.siteName[lang] ?? undefined}>
+              {/* Default: white version of the masthead logo straight on the footer colour.
+                  An admin-uploaded logo is a dark-on-white image, so it's turned light and
+                  blended in (invert → the white background goes black, and `screen` makes
+                  black vanish into the footer) instead of sitting on a white plate. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={settings.logo ?? "/logo.png"} alt={settings.siteName[lang] ?? ""} width={2400} height={672} className="h-14 w-auto" loading="lazy" />
+              <img
+                src={settings.logo ?? "/logo-white.png"}
+                alt={settings.siteName[lang] ?? ""}
+                width={2400}
+                height={672}
+                className={settings.logo ? "h-20 w-auto grayscale invert mix-blend-screen" : "h-20 w-auto"}
+                loading="lazy"
+              />
             </Link>
             <p className="mt-3 max-w-xs text-sm text-white/85">{settings.tagline[lang]}</p>
             <div className="mt-4">

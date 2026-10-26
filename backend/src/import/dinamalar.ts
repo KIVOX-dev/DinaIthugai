@@ -1,9 +1,10 @@
 /**
  * Imports Dinamalar's Coimbatore district news (with the story photo) into the newspaper.
  * Used with Dinamalar's permission for the Coimbatore section only — keep SECTIONS limited to what has been agreed.
- * Every imported article credits Dinamalar and links back to the original story.
+ * The original URL is kept in a hidden field (importedFrom) only to avoid importing a story twice.
  */
 import { connectDB } from "../db";
+import { env } from "../env";
 import { Article, Category, MediaAsset, User } from "../models";
 import { invalidatePublic } from "../articles/cache";
 import { saveArticle, transitionArticle } from "../articles/service";
@@ -14,12 +15,36 @@ import { paraphraseNews } from "../ai/rewrite";
 
 const ORIGIN = "https://www.dinamalar.com";
 const UA = "DinaIdhigaiBot/1.0 (+licensed Coimbatore news import)";
-const CREDIT = "தினமலர்";
+const BYLINE = "தின இதிகை செய்திக் குழு";
 
 /** Dinamalar listing path -> our category slug. */
-export const SECTIONS: { path: string; category: string; name: { ta: string; en: string } }[] = [
-  { path: "/news/tamil-nadu-district-news-coimbatore", category: "coimbatore", name: { ta: "கோவை", en: "Coimbatore" } },
+export const SECTIONS: { path: string; category: string; name: { ta: string; en: string }; parent?: string }[] = [
+  { path: "/news/tamil-nadu-district-news-coimbatore", category: "coimbatore", name: { ta: "கோவை", en: "Coimbatore" }, parent: "tamil-nadu" },
+  { path: "/news/tamil-nadu-district-news-nilgiris", category: "nilgiris", name: { ta: "நீலகிரி", en: "Nilgiris" }, parent: "tamil-nadu" },
+  { path: "/news/tamil-nadu-district-news-tiruppur", category: "tiruppur", name: { ta: "திருப்பூர்", en: "Tiruppur" }, parent: "tamil-nadu" },
+  { path: "/news/tamil-nadu-district-news-erode", category: "erode", name: { ta: "ஈரோடு", en: "Erode" }, parent: "tamil-nadu" },
+  { path: "/news/tamil-nadu-district-news-chennai", category: "chennai", name: { ta: "சென்னை", en: "Chennai" }, parent: "tamil-nadu" },
+  { path: "/news/tamil-nadu-news", category: "tamil-nadu", name: { ta: "தமிழ்நாடு", en: "Tamil Nadu" } },
+  // Not enabled by default: add the slug to DINAMALAR_SECTIONS once the partner has agreed to the section.
+  { path: "/news/india-tamil-news", category: "india", name: { ta: "இந்தியா", en: "India" } },
+  { path: "/news/world-tamil-news", category: "world", name: { ta: "உலகம்", en: "World" } },
+  { path: "/news/business", category: "business", name: { ta: "வணிகம்", en: "Business" } },
+  { path: "/news/sports", category: "sports", name: { ta: "விளையாட்டு", en: "Sports" } },
+  { path: "/news/kalvimalar-news", category: "education", name: { ta: "கல்வி", en: "Education" } },
 ];
+
+/** Dinamalar has no politics section: Tamil Nadu stories about parties, ministers, elections etc. go to our Politics category. */
+const POLITICS = /முதல்வர்|அமைச்சர்|துணை முதல்|திமுக|தி\.மு\.க|அதிமுக|அ\.தி\.மு\.க|பா\.ஜ|பாஜ|காங்கிரஸ்|தவெக|த\.வெ\.க|நாம் தமிழர்|பா\.ம\.க|பாமக|விசிக|கம்யூனிஸ்ட்|எம்\.எல்\.ஏ|எம்\.பி\.|சட்டசபை|சட்டப்பேரவை|தேர்தல்|அரசியல்|கட்சி|ஸ்டாலின்|உதயநிதி|பழனிசாமி|அண்ணாமலை|விஜய்|சீமான்|ஆளுநர்|கவர்னர்|எதிர்க்கட்சி|சபாநாயகர்/;
+
+/** Only sections listed in DINAMALAR_SECTIONS run; everything else stays off until the partner has agreed to it. */
+const licensed = () => new Set(env().DINAMALAR_SECTIONS.split(",").map((s) => s.trim()).filter(Boolean));
+
+async function ensureCategory(s: (typeof SECTIONS)[number]) {
+  const found = await Category.findOne({ slug: s.category });
+  if (found) return found;
+  const parent = s.parent ? await Category.findOne({ slug: s.parent }) : null;
+  return Category.create({ slug: s.category, name: s.name, order: 50, showInNav: !s.parent, parent: parent?._id ?? null });
+}
 
 const ENTITIES: Record<string, string> = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " };
 const decode = (s: string) =>
@@ -67,19 +92,17 @@ export async function importDinamalar(opts: { limit?: number; publish?: boolean 
   const actor = toPrincipal(adminDoc);
   const result: ImportResult = { checked: 0, imported: 0, skipped: 0, failed: 0, errors: [] };
 
-  for (const section of SECTIONS) {
-    const cat = await Category.findOne({ slug: section.category });
-    if (!cat) {
-      result.errors.push(`Category "${section.category}" does not exist.`);
-      continue;
-    }
+  const allowed = licensed();
+  for (const section of SECTIONS.filter((s) => allowed.has(s.category))) {
+    const cat = await ensureCategory(section);
     const links = parseListing(await (await get(ORIGIN + section.path)).text(), section.path);
+    let imported = 0; // `limit` applies per section so every district gets its share
     for (const link of links) {
-      if (result.imported >= limit) break;
+      if (imported >= limit) break;
       result.checked++;
       const url = ORIGIN + link;
       try {
-        if (await Article.exists({ "sources.url": url })) {
+        if (await Article.exists({ "importedFrom.url": url })) {
           result.skipped++;
           continue;
         }
@@ -93,12 +116,16 @@ export async function importDinamalar(opts: { limit?: number; publish?: boolean 
         if (story.imageUrl) {
           try {
             const buf = Buffer.from(await (await get(`${story.imageUrl}?im=Resize,width=1600`)).arrayBuffer());
-            const media = await uploadImage(actor, { buffer: buf, name: `dinamalar-${story.id}.jpg` }, { credit: CREDIT, alt: { ta: story.title } });
+            const media = await uploadImage(actor, { buffer: buf, name: `dinamalar-${story.id}.jpg` }, { alt: { ta: story.title } });
             featuredImage = media.id;
             await MediaAsset.updateOne({ _id: media.id }, { $set: { origin: "dinamalar" } });
           } catch (e) {
             result.errors.push(`image ${story.id}: ${(e as Error).message}`);
           }
+        }
+        if (!featuredImage) {
+          result.skipped++; // every story on the site carries a photo
+          continue;
         }
         // Lightly reword with AI (same facts, similar words). If the AI is unavailable or alters facts, keep the
         // original text but save it as a draft for an editor instead of publishing it unchanged.
@@ -114,6 +141,10 @@ export async function importDinamalar(opts: { limit?: number; publish?: boolean 
             if (attempt === 2) result.errors.push(`ai ${story.id}: ${(e as Error).message}`);
           }
         }
+        const storyCat =
+          section.category === "tamil-nadu" && POLITICS.test(`${title} ${paragraphs[0] ?? ""}`)
+            ? await ensureCategory({ path: "", category: "politics", name: { ta: "அரசியல்", en: "Politics" } })
+            : cat;
         const body = paragraphs.map((p) => `<p>${esc(p)}</p>`).join("");
         const saved = await saveArticle(actor, null, {
           title: { ta: title, en: "" },
@@ -121,20 +152,20 @@ export async function importDinamalar(opts: { limit?: number; publish?: boolean 
           excerpt: { ta: paragraphs[0].slice(0, 280), en: "" },
           body: { ta: body, en: "" },
           preferredLanguage: "ta",
-          category: String(cat._id),
+          category: String(storyCat._id),
           location: section.name.ta,
           featuredImage,
-          featuredCredit: featuredImage ? CREDIT : undefined,
           featuredCaption: { ta: "", en: "" },
-          sources: [{ label: `${CREDIT} (${section.name.ta})`, url }],
-          authorName: CREDIT,
+          authorName: BYLINE,
           authorId: String(adminDoc._id),
         });
+        await Article.updateOne({ _id: saved.id }, { $set: { "importedFrom.url": url } });
         if (publish && reworded && wordCount(body) > 0) {
           await transitionArticle(actor, saved.id, "published");
           if (story.publishedAt && !isNaN(+story.publishedAt)) await Article.updateOne({ _id: saved.id }, { $set: { publishedAt: story.publishedAt } });
         }
         result.imported++;
+        imported++;
       } catch (e) {
         result.failed++;
         result.errors.push(`${link}: ${(e as Error).message}`);
