@@ -7,7 +7,7 @@ import type { Principal } from "./types";
 /** Server-side gate for admin pages. The backend re-checks every call; this only avoids rendering pages the user cannot use. */
 export async function requireStaffPage(path: string, perm?: Permission): Promise<Principal> {
   const u = await getCurrentUser();
-  if (!u) redirect(`/en/login?next=${encodeURIComponent(path)}`);
+  if (!u) redirect(`/ta/login?next=${encodeURIComponent(path)}`);
   if (!isStaff(u)) redirect("/en");
   if (perm && !can(u, perm)) redirect("/admin?denied=1");
   return u;

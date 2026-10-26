@@ -20,6 +20,7 @@ const mediaSchema = new Schema(
     caption: { ta: { type: String, maxlength: 500 }, en: { type: String, maxlength: 500 } },
     alt: { ta: { type: String, maxlength: 300 }, en: { type: String, maxlength: 300 } },
     credit: { type: String, maxlength: 200 },
+    origin: { type: String, enum: ["dinamalar"], index: true }, // set on images imported from a partner; these are purged after IMPORTED_MEDIA_DAYS
     // Public delivery is only allowed once an article using it is publicly visible.
     visibility: { type: String, enum: ["private", "public"], default: "private", index: true },
     article: { type: Schema.Types.ObjectId, ref: "Article", index: true }, // set when attached

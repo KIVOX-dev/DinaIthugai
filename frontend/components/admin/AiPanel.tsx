@@ -39,8 +39,8 @@ const sel = "w-full rounded border border-rule bg-paper px-2 py-1.5 text-sm";
 /** Admin/editor-only. Never publishes or overwrites anything by itself: the editor must explicitly accept a suggestion. */
 export function AiPanel({ articleId, hooks }: { articleId?: string; hooks: EditorHooks | null }) {
   const [op, setOp] = useState("rewrite");
-  const [src, setSrc] = useState<Lang>("en");
-  const [tgt, setTgt] = useState<Lang>("en");
+  const [src, setSrc] = useState<Lang>("ta");
+  const [tgt, setTgt] = useState<Lang>("ta");
   const [tone, setTone] = useState("neutral");
   const [length, setLength] = useState("same");
   const [keepQuotes, setKeepQuotes] = useState(true);
@@ -92,7 +92,6 @@ export function AiPanel({ articleId, hooks }: { articleId?: string; hooks: Edito
             Source language
             <select className={`${sel} mt-1 font-normal`} value={src} onChange={(e) => setSrc(e.target.value as Lang)}>
               <option value="ta">Tamil</option>
-              <option value="en">English</option>
             </select>
           </label>
           {op === "translate" && (
@@ -100,8 +99,7 @@ export function AiPanel({ articleId, hooks }: { articleId?: string; hooks: Edito
               Translate to
               <select className={`${sel} mt-1 font-normal`} value={tgt} onChange={(e) => setTgt(e.target.value as Lang)}>
                 <option value="ta">Tamil</option>
-                <option value="en">English</option>
-              </select>
+                </select>
             </label>
           )}
           {isBody && op !== "translate" && (

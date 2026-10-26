@@ -135,8 +135,8 @@ export function ArticleEditor({
   const t = makeT(lang);
   const router = useRouter();
   const [id, setId] = useState<string | null>(initial?.id ?? null);
-  const [form, setForm] = useState<Form>(initial ? fromArticle(initial) : { ...blank, preferredLanguage: lang });
-  const [tab, setTab] = useState<Lang2>(initial?.preferredLanguage ?? lang);
+  const [form, setForm] = useState<Form>(initial ? fromArticle(initial) : { ...blank, preferredLanguage: "ta" });
+  const [tab, setTab] = useState<Lang2>("ta");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [top, setTop] = useState<{ kind: "error" | "ok"; text: string } | null>(null);
   const [busy, setBusy] = useState<"save" | "submit" | null>(null);
@@ -171,7 +171,7 @@ export function ArticleEditor({
       subtitle: form.subtitle,
       excerpt: form.excerpt,
       body: form.body,
-      preferredLanguage: form.preferredLanguage,
+      preferredLanguage: "ta",
       category: form.category || null,
       location: form.location,
       featuredImage: form.featuredImage || null,
@@ -274,7 +274,7 @@ export function ArticleEditor({
   const other: Lang2 = L === "ta" ? "en" : "ta";
   const FIELDS = ["title", "subtitle", "excerpt", "body"] as const;
   // fields in this tab whose text is mostly in the other language's script
-  const misplaced = FIELDS.filter((f) => scriptOf(form[f][L]) === other);
+  const misplaced: (typeof FIELDS)[number][] = []; // Tamil-only newspaper: no other-language tab to move text to
 
   function moveMisplaced() {
     const blocked = misplaced.some((f) => form[f][other].trim() !== "");
@@ -317,14 +317,9 @@ export function ArticleEditor({
         </div>
       )}
 
-      <SelectField id="preferredLanguage" lang={lang} label={t("submit.lang")} value={form.preferredLanguage} disabled={!editable} onChange={(ev) => set({ preferredLanguage: ev.target.value as Lang2 })}>
-        <option value="ta">தமிழ்</option>
-        <option value="en">English</option>
-      </SelectField>
-
       <div>
-        <div role="tablist" aria-label="Language versions" className="flex gap-1 border-b border-rule">
-          {(["ta", "en"] as const).map((l) => {
+        <div role="tablist" aria-label="Language versions" className="hidden">
+          {(["ta"] as const).map((l) => {
             const filled = !!form.title[l] && words(form.body[l]) > 0;
             return (
               <button key={l} type="button" role="tab" aria-selected={tab === l} onClick={() => setTab(l)} className={`-mb-px rounded-t border border-b-0 px-4 py-2 font-bold ${tab === l ? "border-rule bg-paper text-brand" : "border-transparent text-ink2 hover:bg-paper2"}`}>
@@ -343,7 +338,7 @@ export function ArticleEditor({
           </div>
         )}
 
-        {(["ta", "en"] as const).map((l) => (
+        {(["ta"] as const).map((l) => (
           <div key={l} role="tabpanel" hidden={tab !== l} className="space-y-4 pt-4">
             <TextField id={`title-${l}`} lang={lang} label={t("submit.title_label")} value={form.title[l]} maxLength={300} disabled={!editable} onChange={(ev) => set({ title: { ...form.title, [l]: ev.target.value } })} error={e.title ?? e[`title.${l}`]} />
             <TextField id={`subtitle-${l}`} lang={lang} label={t("submit.subtitle_label")} optional={t("common.optional")} value={form.subtitle[l]} maxLength={400} disabled={!editable} onChange={(ev) => set({ subtitle: { ...form.subtitle, [l]: ev.target.value } })} />

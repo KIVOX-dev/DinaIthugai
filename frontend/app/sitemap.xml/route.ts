@@ -12,9 +12,9 @@ export async function GET() {
   const add = (loc: string, alternates: [string, string][], lastmod?: string, freq?: string) =>
     urls.push(`<url><loc>${xmlEscape(loc)}</loc>${lastmod ? `<lastmod>${new Date(lastmod).toISOString()}</lastmod>` : ""}${freq ? `<changefreq>${freq}</changefreq>` : ""}${alt(alternates)}</url>`);
 
-  for (const l of ["ta", "en"] as const) add(`${SITE}/${l}`, [["ta", `${SITE}/ta`], ["en", `${SITE}/en`]], undefined, "hourly");
-  for (const c of d.categories) for (const l of ["ta", "en"] as const) add(`${SITE}/${l}/${c}`, [["ta", `${SITE}/ta/${c}`], ["en", `${SITE}/en/${c}`]], undefined, "hourly");
-  for (const p of STATIC_SLUGS) for (const l of ["ta", "en"] as const) add(`${SITE}/${l}/${p}`, [["ta", `${SITE}/ta/${p}`], ["en", `${SITE}/en/${p}`]], undefined, "yearly");
+  for (const l of ["ta"] as const) add(`${SITE}/${l}`, [["ta", `${SITE}/ta`]], undefined, "hourly");
+  for (const c of d.categories) for (const l of ["ta"] as const) add(`${SITE}/${l}/${c}`, [["ta", `${SITE}/ta/${c}`]], undefined, "hourly");
+  for (const p of STATIC_SLUGS) for (const l of ["ta"] as const) add(`${SITE}/${l}/${p}`, [["ta", `${SITE}/ta/${p}`]], undefined, "yearly");
   for (const a of d.articles) {
     const pairs: [string, string][] = [];
     if (a.languages.ta && a.slug.ta) pairs.push(["ta", articleUrl("ta", a.slug.ta)]);

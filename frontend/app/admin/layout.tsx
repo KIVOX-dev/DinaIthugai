@@ -33,7 +33,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             <div className="flex items-center justify-between px-4 py-3">
               <Link href="/admin" className="flex flex-col gap-1 no-underline" aria-label="Dina Idhigai newsroom">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src="/logo.png" alt="தின இதிகை" width={785} height={160} className="logo-img h-10 w-auto self-start" />
+                <img src="/logo.png" alt="தின இதிகை" width={2400} height={672} className="logo-img h-10 w-auto self-start" />
                 <span className="text-xs font-bold uppercase tracking-widest text-ink3">Newsroom</span>
               </Link>
             </div>

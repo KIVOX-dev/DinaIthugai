@@ -22,7 +22,7 @@ export function Footer({ lang, settings, tree }: { lang: Locale; settings: SiteS
           <div className="md:col-span-4">
             <Link href={`/${lang}`} className="inline-block rounded bg-white px-3 py-2" aria-label={settings.siteName[lang] ?? undefined}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={settings.logo ?? "/logo.png"} alt={settings.siteName[lang] ?? ""} width={785} height={160} className="h-12 w-auto" loading="lazy" />
+              <img src={settings.logo ?? "/logo.png"} alt={settings.siteName[lang] ?? ""} width={2400} height={672} className="h-14 w-auto" loading="lazy" />
             </Link>
             <p className="mt-3 max-w-xs text-sm text-white/85">{settings.tagline[lang]}</p>
             <div className="mt-4">

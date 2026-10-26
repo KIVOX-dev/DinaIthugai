@@ -9,7 +9,7 @@ export async function GET() {
   const rows: string[] = [];
   for (const a of d.articles) {
     if (!a.publishedAt || new Date(a.publishedAt).getTime() < cutoff) continue;
-    for (const l of ["ta", "en"] as const) {
+    for (const l of ["ta"] as const) {
       const slug = a.slug[l];
       const title = a.title[l];
       if (!a.languages[l] || !slug || !title) continue;

@@ -159,7 +159,7 @@ export async function deleteMedia(actor: Principal, id: string) {
   await audit(actor, "media.delete", { type: "media", id });
 }
 
-async function removeAssetObjects(m: MediaDoc) {
+export async function removeAssetObjects(m: MediaDoc) {
   const keys = new Set<string>([m.key, ...m.variants.map((v) => v.key!).filter(Boolean)]);
   const store = getStorageFor(m.storage as "b2" | "local");
   await Promise.allSettled([...keys].map((k) => store.delete(k)));

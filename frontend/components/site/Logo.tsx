@@ -22,7 +22,7 @@ export function Masthead({ lang, name, logoSrc, compact = false }: { lang: Local
     <Link href={`/${lang}`} className="logo-link inline-flex items-center justify-center no-underline" aria-label={label}>
       {/* Default: the client's masthead logo in /public/logo.png; an admin-uploaded logo (settings) overrides it. */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={logoSrc ?? "/logo.png"} alt={label} width={785} height={160} className={`logo-img w-auto ${compact ? "h-9" : "h-14 sm:h-[4.5rem] md:h-20"}`} fetchPriority="high" />
+      <img src={logoSrc ?? "/logo.png"} alt={label} width={2400} height={672} className={`logo-img w-auto ${compact ? "h-9" : "h-14 sm:h-[4.5rem] md:h-20"}`} fetchPriority="high" />
     </Link>
   );
 }

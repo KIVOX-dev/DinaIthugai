@@ -1,0 +1,26 @@
+name: Import Dinamalar Coimbatore news
+
+# Licensed import of Dinamalar's Coimbatore section (text + photo, credited and linked back). Runs hourly.
+on:
+  schedule:
+    - cron: "15 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: import-dinamalar
+  cancel-in-progress: false
+
+jobs:
+  import:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Call the backend import endpoint
+        env:
+          BACKEND_URL: ${{ vars.BACKEND_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          test -n "$BACKEND_URL" && test -n "$CRON_SECRET" || { echo "BACKEND_URL variable / CRON_SECRET secret not set"; exit 1; }
+          curl -fsS --max-time 300 -X POST -H "Authorization: Bearer $CRON_SECRET" "$BACKEND_URL/api/cron/import-dinamalar"

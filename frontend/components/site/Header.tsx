@@ -3,7 +3,6 @@ import type { Locale } from "@/lib/shared/i18n";
 import type { CategoryNode, Principal, SiteSettings } from "@/lib/types";
 import { isStaff } from "@/lib/shared/permissions";
 import { formatLongDate, makeT } from "@/lib/i18n/dictionary";
-import { LanguageSwitch } from "./LanguageSwitch";
 import { Masthead } from "./Logo";
 import { MenuDrawer, type NavItem } from "./MobileNav";
 import { SearchToggle } from "./SearchToggle";
@@ -57,7 +56,6 @@ export function Header({ lang, settings, tree, user }: { lang: Locale; settings:
           </div>
         </div>
         <div className="relative z-10 col-span-3 row-start-1 flex min-w-0 flex-col items-end gap-2 lg:col-span-1 lg:col-start-3">
-          <LanguageSwitch lang={lang} label={t("lang.switch")} />
           <div className="hidden items-center gap-3 text-sm lg:flex">
             {user ? (
               <>

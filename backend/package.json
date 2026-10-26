@@ -17,6 +17,7 @@
     "dev:last-email": "tsx --env-file=.env scripts/last-email.ts",
     "b2:check": "tsx --env-file=.env scripts/b2-check.ts",
     "media:migrate-to-b2": "tsx --env-file=.env scripts/migrate-media-to-b2.ts",
+    "import:dinamalar": "tsx --env-file=.env scripts/import-dinamalar.ts",
     "admin:create": "tsx --env-file=.env scripts/create-admin.ts"
   },
   "dependencies": {
