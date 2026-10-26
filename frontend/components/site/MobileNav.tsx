@@ -1,11 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import { Avatar, ProfileLinks, type ProfileLabels, type ProfileUser } from "./ProfileMenu";
 
 export type NavItem = { href: string; label: string; children?: { href: string; label: string }[] };
 
 /** Hamburger + left slide-out drawer (all screen sizes) with focus management and Escape-to-close. */
-export function MenuDrawer({ items, extra, labels }: { items: NavItem[]; extra: NavItem[]; labels: { menu: string; close: string; sections: string } }) {
+export function MenuDrawer({ items, extra, labels, lang, user, profileLabels }: { items: NavItem[]; extra: NavItem[]; labels: { menu: string; close: string; sections: string }; lang: string; user: ProfileUser | null; profileLabels: ProfileLabels }) {
   const [open, setOpen] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -52,6 +53,32 @@ export function MenuDrawer({ items, extra, labels }: { items: NavItem[]; extra: 
                   <path d="M4 4l12 12M16 4 4 16" />
                 </svg>
               </button>
+            </div>
+            {/* Profile first, like a normal app */}
+            <div className="border-b border-rule bg-paper2 px-4 py-3">
+              {user ? (
+                <>
+                  <div className="flex items-center gap-3">
+                    <Avatar name={user.name} size={44} />
+                    <div className="min-w-0">
+                      <p className="headline truncate text-lg">{user.name}</p>
+                      <p className="truncate text-xs text-ink3">{user.email}</p>
+                    </div>
+                  </div>
+                  <div className="mt-2">
+                    <ProfileLinks lang={lang} user={user} labels={profileLabels} onNavigate={() => setOpen(false)} />
+                  </div>
+                </>
+              ) : (
+                <div className="flex gap-2">
+                  <Link href={`/${lang}/login`} onClick={() => setOpen(false)} className="flex-1 rounded bg-brand px-3 py-2 text-center font-bold text-brand-ink no-underline">
+                    {profileLabels.login}
+                  </Link>
+                  <Link href={`/${lang}/register`} onClick={() => setOpen(false)} className="flex-1 rounded border border-brand px-3 py-2 text-center font-bold text-brand no-underline">
+                    {profileLabels.register}
+                  </Link>
+                </div>
+              )}
             </div>
             <ul className="px-4 py-2">
               {items.map((it) => (

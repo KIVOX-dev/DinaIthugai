@@ -6,7 +6,7 @@ import { formatLongDate, makeT } from "@/lib/i18n/dictionary";
 import { Masthead } from "./Logo";
 import { MenuDrawer, type NavItem } from "./MobileNav";
 import { SearchToggle } from "./SearchToggle";
-import { LogoutButton } from "./LogoutButton";
+import { ProfileMenu, type ProfileLabels, type ProfileUser } from "./ProfileMenu";
 import { SocialIcons } from "./SocialIcons";
 
 export function Header({ lang, settings, tree, user }: { lang: Locale; settings: SiteSettings; tree: CategoryNode[]; user: Principal | null }) {
@@ -21,8 +21,9 @@ export function Header({ lang, settings, tree, user }: { lang: Locale; settings:
     { href: `/${lang}/trending`, label: t("nav.trending") },
     { href: `/${lang}/gallery`, label: t("nav.gallery") },
     { href: `/${lang}/account/submit`, label: t("nav.submit") },
-    ...(user ? [{ href: `/${lang}/account`, label: t("nav.account") }] : [{ href: `/${lang}/login`, label: t("nav.login") }, { href: `/${lang}/register`, label: t("nav.register") }]),
   ];
+  const profileUser: ProfileUser | null = user ? { name: user.name, email: user.email, staff: isStaff(user) } : null;
+  const profileLabels: ProfileLabels = { login: t("nav.login"), register: t("nav.register"), account: t("nav.account"), submissions: t("nav.submissions"), notifications: t("nav.notifications"), admin: t("nav.admin"), logout: t("nav.logout"), profile: t("nav.profile") };
   const primary = nav.slice(0, 8);
   const now = new Date();
 
@@ -56,32 +57,24 @@ export function Header({ lang, settings, tree, user }: { lang: Locale; settings:
           </div>
         </div>
         <div className="relative z-10 col-span-3 row-start-1 flex min-w-0 flex-col items-end gap-2 lg:col-span-1 lg:col-start-3">
-          <div className="hidden items-center gap-3 text-sm lg:flex">
-            {user ? (
-              <>
-                {isStaff(user) && (
-                  <Link href="/admin" className="font-bold text-brand no-underline">
-                    {t("nav.admin")}
-                  </Link>
-                )}
-                <Link href={`/${lang}/account`} className="max-w-32 truncate no-underline hover:underline">
-                  {user.name}
-                </Link>
-                <LogoutButton lang={lang} label={t("nav.logout")} />
-              </>
-            ) : (
-              <>
+          <div className="flex items-center gap-3 text-sm">
+            {!user && (
+              <span className="hidden items-center gap-3 lg:flex">
                 <Link href={`/${lang}/login`} className="no-underline hover:underline">
                   {t("nav.login")}
                 </Link>
                 <Link href={`/${lang}/register`} className="no-underline hover:underline">
                   {t("nav.register")}
                 </Link>
-              </>
+              </span>
             )}
-            <Link href={`/${lang}/account/submit`} className="rounded bg-accent px-3 py-1.5 font-bold text-white no-underline">
+            <Link href={`/${lang}/account/submit`} className="hidden rounded bg-accent px-3 py-1.5 font-bold text-white no-underline lg:inline-block">
               {t("nav.submit")}
             </Link>
+            {/* Avatar menu on every screen size; guests get the text links above on desktop and a person icon on mobile. */}
+            <span className={user ? "" : "lg:hidden"}>
+              <ProfileMenu lang={lang} user={profileUser} labels={profileLabels} />
+            </span>
           </div>
         </div>
       </div>
@@ -89,7 +82,7 @@ export function Header({ lang, settings, tree, user }: { lang: Locale; settings:
       {/* Row 2: full-width grey navigation bar: menu, sections, search */}
       <nav aria-label="Sections" className="bg-[#6e6a67] text-white">
         <div className="mx-auto flex max-w-[1500px] 2xl:max-w-[1800px] items-center px-2">
-          <MenuDrawer items={drawer} extra={extra} labels={{ menu: t("nav.menu"), close: t("nav.close"), sections: t("footer.sections") }} />
+          <MenuDrawer items={drawer} extra={extra} labels={{ menu: t("nav.menu"), close: t("nav.close"), sections: t("footer.sections") }} lang={lang} user={profileUser} profileLabels={profileLabels} />
           <ul className="no-scrollbar flex flex-1 items-stretch justify-start gap-1 overflow-x-auto md:justify-center lg:gap-3">
             {primary.map((n) => (
               <li key={n.slug} className="group relative shrink-0">
