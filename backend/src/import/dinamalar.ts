@@ -64,8 +64,11 @@ async function get(url: string): Promise<Response> {
 export type Story = { url: string; id: string; title: string; paragraphs: string[]; imageUrl?: string; publishedAt?: Date };
 
 export function parseListing(html: string, path: string): string[] {
-  const re = new RegExp(`href="(${path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}/[^"#?]+/\\d+)"`, "g");
-  return [...new Set([...html.matchAll(re)].map((m) => m[1]))];
+  // Sections such as business or sports list stories under sub-sections (/news/business-banking-and-finance/...),
+  // so accept any path that starts with the section path. Newest stories (highest id) first.
+  const re = new RegExp(`href="(${path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[a-z0-9-]*/[^"#?]+/\\d+)"`, "g");
+  const links = [...new Set([...html.matchAll(re)].map((m) => m[1]))];
+  return links.sort((a, b) => Number(b.match(/(\d+)$/)?.[1]) - Number(a.match(/(\d+)$/)?.[1]));
 }
 
 export function parseStory(html: string, url: string): Story | null {
