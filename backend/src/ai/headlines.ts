@@ -37,7 +37,7 @@ export async function refreshHeadlines(limit = 24) {
   const res = await callProvider(SYSTEM, `<stories>
 ${JSON.stringify(input)}
 </stories>
-Reply with the JSON object only.`);
+Reply with the JSON object only.`, { maxWaitMs: 60_000, maxTokens: 4000 });
   const raw = res.text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
   const s = raw.indexOf("{"), e = raw.lastIndexOf("}");
   if (s < 0 || e <= s) throw new Error("headlines: no json");

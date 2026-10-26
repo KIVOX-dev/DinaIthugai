@@ -116,29 +116,40 @@ export function unmaskMedia(html: string, media: string[]) {
 /** Which keys have been rate-limited recently: skipped until the cool-down passes. */
 const coolDown = new Map<string, number>();
 
-export async function callProvider(system: string, user: string): Promise<{ text: string; provider: string; model: string }> {
+export async function callProvider(system: string, user: string, opts: { maxWaitMs?: number; maxTokens?: number } = {}): Promise<{ text: string; provider: string; model: string }> {
   const e = env();
   const keys = aiKeys(e);
   if (!keys.length) throw new ServiceError("unavailable", "The AI assistant is not configured. Set AI_API_KEYS on the server.");
-  // Start from a rotating offset so load spreads across free-tier keys; skip keys that are cooling down.
-  const now = Date.now();
-  const ordered = keys.filter((k) => (coolDown.get(k) ?? 0) < now);
-  const candidates = ordered.length ? ordered : keys;
+  const maxWait = opts.maxWaitMs ?? 8_000;
+  const started = Date.now();
   let lastStatus = 0;
-  for (const key of candidates) {
-    try {
-      const res = await requestOnce(e, key, system, user);
-      if (res.ok) return res.value;
-      lastStatus = res.status;
-      // 401/403 = bad key, 429 = rate limit, 5xx = provider trouble: try the next key. Other 4xx will not improve.
-      if (res.status === 429 || res.status === 401 || res.status === 403 || res.status >= 500) {
-        coolDown.set(key, Date.now() + (res.status === 429 ? 60_000 : 300_000));
-        continue;
+  // Keys are tried in order, skipping ones cooling down (rate-limited 60s, rejected 1h). When every key is cooling down
+  // we wait for the soonest one to come back (up to maxWaitMs) instead of failing, so bursts such as imports just slow down.
+  for (let round = 0; round < 6; round++) {
+    const now = Date.now();
+    const ready = keys.filter((k) => (coolDown.get(k) ?? 0) <= now);
+    if (!ready.length) {
+      const wait = Math.min(...keys.map((k) => coolDown.get(k) ?? 0)) - now + 250;
+      if (Date.now() - started + wait > maxWait) break;
+      await new Promise((r) => setTimeout(r, wait));
+      continue;
+    }
+    for (const key of ready) {
+      try {
+        const res = await requestOnce(e, key, system, user, opts.maxTokens);
+        if (res.ok) return res.value;
+        lastStatus = res.status;
+        // 401/403 = bad key, 429 = rate limit, 5xx = provider trouble: try the next key. Other 4xx will not improve.
+        if (res.status === 429 || res.status === 401 || res.status === 403 || res.status >= 500) {
+          coolDown.set(key, Date.now() + (res.status === 429 ? 60_000 : res.status >= 500 ? 30_000 : 3_600_000));
+          continue;
+        }
+        throw new ServiceError("unavailable", `The AI provider rejected the request (${res.status}).`);
+      } catch (err) {
+        if (err instanceof ServiceError) throw err;
+        if ((err as Error).name === "TimeoutError" || (err as Error).name === "AbortError") throw err;
+        lastStatus = 0;
       }
-      break;
-    } catch (err) {
-      if ((err as Error).name === "TimeoutError" || (err as Error).name === "AbortError") throw err;
-      lastStatus = 0;
     }
   }
   throw new ServiceError("unavailable", `The AI provider is unavailable${lastStatus ? ` (${lastStatus})` : ""}. Please try again shortly.`);
@@ -146,7 +157,7 @@ export async function callProvider(system: string, user: string): Promise<{ text
 
 type Once = { ok: true; value: { text: string; provider: string; model: string } } | { ok: false; status: number };
 
-async function requestOnce(e: ReturnType<typeof env>, key: string, system: string, user: string): Promise<Once> {
+async function requestOnce(e: ReturnType<typeof env>, key: string, system: string, user: string, maxTokens = 8000): Promise<Once> {
   const signal = AbortSignal.timeout(90_000);
   if (e.AI_PROVIDER === "anthropic") {
     const base = (e.AI_BASE_URL ?? "https://api.anthropic.com").replace(/\/$/, "");
@@ -154,7 +165,7 @@ async function requestOnce(e: ReturnType<typeof env>, key: string, system: strin
       method: "POST",
       signal,
       headers: { "content-type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01" },
-      body: JSON.stringify({ model: e.AI_MODEL, max_tokens: 8000, temperature: 0.3, system, messages: [{ role: "user", content: user }] }),
+      body: JSON.stringify({ model: e.AI_MODEL, max_tokens: maxTokens, temperature: 0.3, system, messages: [{ role: "user", content: user }] }),
     });
     if (!res.ok) return { ok: false, status: res.status };
     const json = (await res.json()) as { content?: { type: string; text?: string }[] };
@@ -169,7 +180,7 @@ async function requestOnce(e: ReturnType<typeof env>, key: string, system: strin
     body: JSON.stringify({
       model: e.AI_MODEL,
       temperature: 0.3,
-      max_tokens: 8000,
+      max_tokens: maxTokens,
       messages: [{ role: "system", content: system }, { role: "user", content: user }],
       ...(groq ? { response_format: { type: "json_object" }, reasoning_effort: "low" } : {}),
     }),
@@ -206,7 +217,7 @@ export async function paraphraseNews(title: string, paragraphs: string[]): Promi
   const res = await callProvider(PARAPHRASE_SYSTEM, `<article>
 ${input}
 </article>
-Reply with the JSON object only.`);
+Reply with the JSON object only.`, { maxWaitMs: 120_000, maxTokens: 6000 });
   const raw = res.text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
   const s = raw.indexOf("{"), e = raw.lastIndexOf("}");
   if (s < 0 || e <= s) throw new Error("paraphrase: no json");
