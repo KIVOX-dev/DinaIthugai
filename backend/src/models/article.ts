@@ -34,7 +34,7 @@ const articleSchema = new Schema(
     featuredCredit: { type: String, maxlength: 200 },
     media: [{ type: Schema.Types.ObjectId, ref: "MediaAsset" }], // every image referenced by the body
 
-    importedFrom: { url: { type: String, maxlength: 500, index: true } }, // internal only (dedupe of partner imports); never exposed publicly
+    importedFrom: { url: { type: String, maxlength: 500 } }, // internal only (dedupe of partner imports); never exposed publicly
     sources: [{ _id: false, label: { type: String, maxlength: 200 }, url: { type: String, maxlength: 500 } }],
     credits: { type: String, maxlength: 400 },
     canonicalUrl: { type: String, maxlength: 500 },
@@ -75,6 +75,8 @@ const articleSchema = new Schema(
 // Unique slugs per language route scope. Partial so articles without that language don't collide on null.
 articleSchema.index({ "slug.ta": 1 }, { unique: true, partialFilterExpression: { "slug.ta": { $type: "string" } } });
 articleSchema.index({ "slug.en": 1 }, { unique: true, partialFilterExpression: { "slug.en": { $type: "string" } } });
+// A partner story can be imported only once, even if two import runs overlap.
+articleSchema.index({ "importedFrom.url": 1 }, { unique: true, partialFilterExpression: { "importedFrom.url": { $type: "string" } } });
 articleSchema.index({ status: 1, publishedAt: -1 }); // public latest feed
 articleSchema.index({ status: 1, scheduledAt: 1 }); // scheduler
 articleSchema.index({ category: 1, status: 1, publishedAt: -1 });

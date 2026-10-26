@@ -44,7 +44,7 @@ export function MenuDrawer({ items, extra, labels }: { items: NavItem[]; extra: 
       {open && (
         <div className="fixed inset-0 z-50" data-testid="mobile-menu">
           <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)} aria-hidden="true" />
-          <div ref={panel} id="site-drawer" role="dialog" aria-modal="true" aria-label={labels.menu} className="absolute left-0 top-0 h-full w-[88%] max-w-sm overflow-y-auto bg-paper shadow-2xl">
+          <div ref={panel} id="site-drawer" role="dialog" aria-modal="true" aria-label={labels.menu} className="absolute left-0 top-0 h-full w-[88%] max-w-sm overflow-y-auto bg-paper text-ink shadow-2xl">
             <div className="flex items-center justify-between border-b border-rule px-4 py-3">
               <span className="headline text-lg">{labels.sections}</span>
               <button type="button" onClick={() => setOpen(false)} aria-label={labels.close} className="flex h-9 w-9 items-center justify-center rounded border border-rule">

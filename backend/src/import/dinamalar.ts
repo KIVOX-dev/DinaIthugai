@@ -83,7 +83,19 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export type ImportResult = { checked: number; imported: number; skipped: number; failed: number; errors: string[] };
 
+let running = false;
+
 export async function importDinamalar(opts: { limit?: number; publish?: boolean } = {}): Promise<ImportResult> {
+  if (running) return { checked: 0, imported: 0, skipped: 0, failed: 0, errors: ["an import is already running"] };
+  running = true;
+  try {
+    return await runImport(opts);
+  } finally {
+    running = false;
+  }
+}
+
+async function runImport(opts: { limit?: number; publish?: boolean }): Promise<ImportResult> {
   await connectDB();
   const limit = opts.limit ?? 10;
   const publish = opts.publish ?? true;
@@ -159,7 +171,24 @@ export async function importDinamalar(opts: { limit?: number; publish?: boolean 
           authorName: BYLINE,
           authorId: String(adminDoc._id),
         });
-        await Article.updateOne({ _id: saved.id }, { $set: { "importedFrom.url": url } });
+        try {
+          await Article.updateOne({ _id: saved.id }, { $set: { "importedFrom.url": url } });
+        } catch (e) {
+          if ((e as { code?: number }).code === 11000) {
+            // another run imported this story first: drop our copy (and its photo)
+            await Article.deleteOne({ _id: saved.id });
+            if (featuredImage) {
+              const m = await MediaAsset.findById(featuredImage);
+              if (m) {
+                await removeAssetObjects(m);
+                await MediaAsset.deleteOne({ _id: m._id });
+              }
+            }
+            result.skipped++;
+            continue;
+          }
+          throw e;
+        }
         if (publish && reworded && wordCount(body) > 0) {
           await transitionArticle(actor, saved.id, "published");
           if (story.publishedAt && !isNaN(+story.publishedAt)) await Article.updateOne({ _id: saved.id }, { $set: { publishedAt: story.publishedAt } });
