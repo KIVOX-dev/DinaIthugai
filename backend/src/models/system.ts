@@ -50,6 +50,13 @@ const settingsSchema = new Schema<any>(
       ],
       default: [],
     },
+    // Categories (slugs) whose stories get priority in the homepage headlines.
+    priorityRegions: { type: [String], default: ["coimbatore", "nilgiris", "tiruppur", "erode", "chennai"] },
+    // Headlines typed in by an admin: shown at the top of the Headlines section.
+    customHeadlines: {
+      type: [{ _id: false, text: { type: String, maxlength: 300 }, href: { type: String, maxlength: 500 }, enabled: { type: Boolean, default: true }, order: { type: Number, default: 100 } }],
+      default: [],
+    },
     seo: {
       title: { ta: String, en: String },
       description: { ta: String, en: String },
@@ -85,6 +92,8 @@ export interface SettingsDoc {
   defaultLocale: "ta" | "en";
   enabledLocales: string[];
   edition: L;
+  priorityRegions: string[];
+  customHeadlines: { text?: string | null; href?: string | null; enabled?: boolean; order?: number }[];
   homepageSections: { key?: string | null; enabled?: boolean; order?: number; limit?: number }[];
   seo: { title?: L; description?: L; ogImage?: string | null };
   social: { facebook?: string | null; x?: string | null; instagram?: string | null; youtube?: string | null; whatsapp?: string | null };

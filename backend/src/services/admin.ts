@@ -96,6 +96,8 @@ const settingsSchema = z.object({
   defaultLocale: z.enum(["ta", "en"]).optional(),
   edition: loc.optional(),
   homepageSections: z.array(z.object({ key: z.string().max(80), enabled: z.boolean().default(true), order: z.number().int().default(100), limit: z.number().int().min(1).max(12).default(5) })).max(30).optional(),
+  priorityRegions: z.array(z.string().trim().toLowerCase().max(80)).max(20).optional(),
+  customHeadlines: z.array(z.object({ text: z.string().trim().min(1).max(300), href: z.string().trim().max(500).regex(/^(https?:\/\/|\/)/).or(z.literal("")).default(""), enabled: z.boolean().default(true), order: z.number().int().default(100) })).max(20).optional(),
   seo: z.object({ title: loc.optional(), description: loc.optional(), ogImage: z.string().max(300).optional() }).optional(),
   social: z.object({ facebook: z.string().max(300).optional(), x: z.string().max(300).optional(), instagram: z.string().max(300).optional(), youtube: z.string().max(300).optional(), whatsapp: z.string().max(300).optional() }).optional(),
   contact: z.object({ email: z.string().max(200).optional(), phone: z.string().max(40).optional(), address: loc.optional() }).optional(),

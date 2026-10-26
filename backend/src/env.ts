@@ -14,7 +14,7 @@ const schema = z.object({
   SESSION_TTL_DAYS: z.coerce.number().default(14),
   CRON_SECRET: z.string().optional(),
   // Which partner-import sections are licensed to run (comma-separated category slugs). Only add what the partner has agreed to.
-  DINAMALAR_SECTIONS: z.string().default("coimbatore,nilgiris,tiruppur,erode,chennai,tamil-nadu"),
+  DINAMALAR_SECTIONS: z.string().default("coimbatore,nilgiris,tiruppur,erode,chennai,tamil-nadu,india,world,business,sports,education"),
 
   B2_ENDPOINT: z.string().optional(), // e.g. https://s3.us-west-004.backblazeb2.com
   B2_REGION: z.string().optional(), // e.g. us-west-004

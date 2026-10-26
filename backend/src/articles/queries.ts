@@ -132,13 +132,20 @@ export async function getHomepage(lang: Locale) {
   const tree = await getCategoryTree();
   const vis = { ...visibleFilter(), ...withLang(lang) };
 
-  const featured = await findCards({ ...vis, featured: true }, { lang, sort: { priority: -1, publishedAt: -1 }, limit: 5 });
-  const latestPool = await findCards(vis, { lang, limit: 24 });
+  const featured = await findCards({ ...vis, featured: true }, { lang, sort: { priority: -1, publishedAt: -1 }, limit: 12 });
+  const latestPool = await findCards(vis, { lang, limit: 48 });
+  // Headline order: admin-featured stories first, and within each group stories from the priority regions
+  // (Coimbatore, Nilgiris, Tiruppur, Erode, Chennai by default) ahead of the rest. Recency is kept inside each group.
+  const regions = new Set(settings.priorityRegions?.length ? settings.priorityRegions : ["coimbatore", "nilgiris", "tiruppur", "erode", "chennai"]);
+  const inRegion = (c: ArticleCard) => !!c.category && regions.has(c.category.slug);
+  const tier = (c: ArticleCard) => (c.featured ? 0 : 2) + (inRegion(c) ? 0 : 1);
+  const ranked = [...new Map([...featured, ...latestPool].map((c) => [c.id, c])).values()];
+  ranked.sort((a, b) => tier(a) - tier(b)); // stable: keeps priority / recency order within a tier
   const used = new Set<string>();
-  const lead = featured[0] ?? latestPool[0];
+  const lead = ranked[0];
   if (lead) used.add(lead.id);
   const secondary: ArticleCard[] = [];
-  for (const c of [...featured.slice(1), ...latestPool]) {
+  for (const c of ranked.slice(1)) {
     if (used.has(c.id) || secondary.length >= 4) continue; // a story appears once on the page
     used.add(c.id);
     secondary.push(c);
@@ -160,7 +167,11 @@ export async function getHomepage(lang: Locale) {
   );
 
   const [breaking, trending, ads] = await Promise.all([getBreaking(lang), getTrending(lang), getActiveAds(lang)]);
-  return { breaking, lead, secondary, latest, trending, sections: sections.filter((s) => s.items.length), ads, settings };
+  const customHeadlines = (settings.customHeadlines ?? [])
+    .filter((h) => h.enabled !== false && h.text)
+    .sort((a, b) => (a.order ?? 100) - (b.order ?? 100))
+    .map((h) => ({ text: h.text as string, href: h.href || undefined }));
+  return { breaking, lead, secondary, latest, trending, sections: sections.filter((s) => s.items.length), customHeadlines, ads, settings };
 }
 
 /* ---------------------------------- categories ------------------------------- */

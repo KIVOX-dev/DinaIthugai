@@ -78,6 +78,7 @@ export type HomeData = {
   secondary: ArticleCard[];
   latest: ArticleCard[];
   trending: ArticleCard[];
+  customHeadlines?: { text: string; href?: string }[];
   sections: { key: string; category?: { slug: string; name: { ta: string; en: string }; accent?: string }; items: ArticleCard[] }[];
   ads: Record<string, Ad[]>;
 };

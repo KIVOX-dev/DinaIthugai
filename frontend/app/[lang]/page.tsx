@@ -74,6 +74,23 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           <span className="h-px flex-1 bg-ink/50" aria-hidden="true" />
         </div>
 
+        {h.customHeadlines && h.customHeadlines.length > 0 && (
+          <ul className="mt-5 grid gap-x-8 gap-y-1 border-y border-rule py-3 sm:grid-cols-2">
+            {h.customHeadlines.map((c, i) => (
+              <li key={i} className="headline flex gap-2 text-lg leading-snug">
+                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" aria-hidden="true" />
+                {c.href ? (
+                  <Link href={c.href} className="no-underline hover:underline" {...(/^https?:/.test(c.href) ? { target: "_blank", rel: "noopener" } : {})}>
+                    {c.text}
+                  </Link>
+                ) : (
+                  <span>{c.text}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
+
         <div className="mt-6 grid gap-8 md:grid-cols-2 lg:grid-cols-[1fr_1.7fr_1fr]">
           <div className="order-2 space-y-6 md:order-2 lg:order-none lg:border-r lg:border-rule lg:pr-6">
             {h.secondary.slice(0, 2).map((c) => (

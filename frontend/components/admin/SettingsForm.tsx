@@ -19,6 +19,8 @@ export type SettingsData = {
   submissions: { enabled: boolean; requireVerifiedEmail: boolean; maxImagesPerArticle: number; minWords: number; rules?: L };
   uploads: { maxMb: number; allowedTypes: string[] };
   ai: { enabled: boolean; hourlyLimitPerUser: number };
+  priorityRegions?: string[];
+  customHeadlines?: { text?: string | null; href?: string | null; enabled?: boolean; order?: number }[];
   homepageSections: { key?: string | null; enabled?: boolean; order?: number; limit?: number }[];
   footerLinks: { label?: L; href?: string | null }[];
   staticPages: Record<string, L>;
@@ -51,7 +53,7 @@ const Chk = ({ label, checked, onChange }: { label: string; checked: boolean; on
 
 export function SettingsForm({ initial, ads, categories }: { initial: SettingsData; ads: AdItem[]; categories: { slug: string; name: string }[] }) {
   const router = useRouter();
-  const [s, setS] = useState<SettingsData>({ ...initial, social: initial.social ?? {}, contact: initial.contact ?? {}, staticPages: initial.staticPages ?? {}, homepageSections: initial.homepageSections ?? [], footerLinks: initial.footerLinks ?? [] });
+  const [s, setS] = useState<SettingsData>({ ...initial, social: initial.social ?? {}, contact: initial.contact ?? {}, staticPages: initial.staticPages ?? {}, homepageSections: initial.homepageSections ?? [], priorityRegions: initial.priorityRegions ?? [], customHeadlines: initial.customHeadlines ?? [], footerLinks: initial.footerLinks ?? [] });
   const [msg, setMsg] = useState<{ kind: "ok" | "error"; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [pageSlug, setPageSlug] = useState<StaticSlug>("about");
@@ -74,6 +76,8 @@ export function SettingsForm({ initial, ads, categories }: { initial: SettingsDa
       submissions: { ...s.submissions, rules: loc(s.submissions.rules) },
       uploads: s.uploads,
       ai: s.ai,
+      priorityRegions: (s.priorityRegions ?? []).filter(Boolean),
+      customHeadlines: (s.customHeadlines ?? []).filter((h) => h.text?.trim()).map((h) => ({ text: h.text!.trim(), href: (h.href ?? "").trim(), enabled: h.enabled !== false, order: h.order ?? 100 })),
       homepageSections: s.homepageSections.filter((h) => h.key).map((h) => ({ key: h.key!, enabled: h.enabled !== false, order: h.order ?? 100, limit: h.limit ?? 5 })),
       footerLinks: s.footerLinks.filter((f) => f.href).map((f) => ({ label: loc(f.label), href: f.href! })),
       staticPages: Object.fromEntries(Object.entries(s.staticPages).filter(([, v]) => v.ta || v.en).map(([k, v]) => [k, loc(v)])),
@@ -144,6 +148,32 @@ export function SettingsForm({ initial, ads, categories }: { initial: SettingsDa
       <Section title="AI assistant">
         <Chk label="Enable the AI assistant for permitted staff" checked={s.ai.enabled} onChange={(v) => set("ai", { ...s.ai, enabled: v })} />
         <Txt type="number" label="Requests per user per hour" value={s.ai.hourlyLimitPerUser} onChange={(v) => set("ai", { ...s.ai, hourlyLimitPerUser: Number(v) || 1 })} />
+      </Section>
+
+      <Section title="Headlines" hint="Type your own headlines for the top of the homepage (they appear under “தலைப்புச் செய்திகள்”, lowest Order first). Link is optional: a page on this site like /ta/news/… or a full https:// address.">
+        {(s.customHeadlines ?? []).map((h, i) => (
+          <div key={i} className="grid grid-cols-[1fr_1fr_5rem_auto_auto] items-end gap-2">
+            <Txt label="Headline" value={h.text ?? ""} maxLength={300} onChange={(v) => set("customHeadlines", (s.customHeadlines ?? []).map((x, j) => (j === i ? { ...x, text: v } : x)))} />
+            <Txt label="Link (optional)" value={h.href ?? ""} onChange={(v) => set("customHeadlines", (s.customHeadlines ?? []).map((x, j) => (j === i ? { ...x, href: v } : x)))} />
+            <Txt type="number" label="Order" value={h.order ?? 100} onChange={(v) => set("customHeadlines", (s.customHeadlines ?? []).map((x, j) => (j === i ? { ...x, order: Number(v) || 0 } : x)))} />
+            <Chk label="On" checked={h.enabled !== false} onChange={(v) => set("customHeadlines", (s.customHeadlines ?? []).map((x, j) => (j === i ? { ...x, enabled: v } : x)))} />
+            <button type="button" className="pb-1 text-xs font-bold text-accent underline" onClick={() => set("customHeadlines", (s.customHeadlines ?? []).filter((_, j) => j !== i))}>
+              Remove
+            </button>
+          </div>
+        ))}
+        <button type="button" className="text-sm font-bold text-brand" onClick={() => set("customHeadlines", [...(s.customHeadlines ?? []), { text: "", href: "", enabled: true, order: ((s.customHeadlines ?? []).length + 1) * 10 }])}>
+          + Add headline
+        </button>
+        <div className="border-t border-rule pt-3">
+          <p className="text-xs font-bold">Priority regions</p>
+          <p className="mb-2 text-xs text-ink3">Stories from these categories are shown first in the headlines (admin-featured stories still come before them).</p>
+          <div className="grid gap-1 sm:grid-cols-3">
+            {categories.map((c) => (
+              <Chk key={c.slug} label={c.name} checked={(s.priorityRegions ?? []).includes(c.slug)} onChange={(v) => set("priorityRegions", v ? [...(s.priorityRegions ?? []), c.slug] : (s.priorityRegions ?? []).filter((x) => x !== c.slug))} />
+            ))}
+          </div>
+        </div>
       </Section>
 
       <Section title="Homepage sections" hint="Leave empty to show every top-level category in navigation order. Otherwise only the rows below are shown, sorted by Order.">
