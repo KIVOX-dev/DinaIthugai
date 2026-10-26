@@ -114,6 +114,7 @@ async function runImport(opts: { limit?: number; publish?: boolean }): Promise<I
   const actor = toPrincipal(adminDoc);
   const result: ImportResult = { checked: 0, imported: 0, skipped: 0, failed: 0, errors: [] };
 
+  let aiFailures = 0; // consecutive stories the AI could not reword
   const allowed = licensed();
   for (const section of SECTIONS.filter((s) => allowed.has(s.category))) {
     const cat = await ensureCategory(section);
@@ -135,6 +136,30 @@ async function runImport(opts: { limit?: number; publish?: boolean }): Promise<I
           result.failed++;
           continue;
         }
+        // Lightly reword with AI first (same facts, similar words). Nothing is saved unless the AI succeeded, so the site
+        // never carries unreworded partner text, and a failed story is simply retried on the next run.
+        let { title, paragraphs } = story;
+        let reworded = false;
+        for (let attempt = 1; attempt <= 2 && !reworded; attempt++) {
+          try {
+            const r = await paraphraseNews(story.title, story.paragraphs);
+            title = r.title;
+            paragraphs = r.paragraphs;
+            reworded = true;
+            aiFailures = 0;
+          } catch (e) {
+            if (attempt === 2) result.errors.push(`ai ${story.id}: ${(e as Error).message}`);
+          }
+        }
+        if (!reworded) {
+          result.skipped++;
+          // The AI's daily quota is probably used up: stop instead of hammering it for every remaining story.
+          if (++aiFailures >= 3) {
+            result.errors.push("stopped early: the AI provider kept failing (daily limit?)");
+            return result;
+          }
+          continue;
+        }
         let featuredImage: string | undefined;
         if (story.imageUrl) {
           try {
@@ -149,20 +174,6 @@ async function runImport(opts: { limit?: number; publish?: boolean }): Promise<I
         if (!featuredImage) {
           result.skipped++; // every story on the site carries a photo
           continue;
-        }
-        // Lightly reword with AI (same facts, similar words). If the AI is unavailable or alters facts, keep the
-        // original text but save it as a draft for an editor instead of publishing it unchanged.
-        let { title, paragraphs } = story;
-        let reworded = false;
-        for (let attempt = 1; attempt <= 2 && !reworded; attempt++) {
-          try {
-            const r = await paraphraseNews(story.title, story.paragraphs);
-            title = r.title;
-            paragraphs = r.paragraphs;
-            reworded = true;
-          } catch (e) {
-            if (attempt === 2) result.errors.push(`ai ${story.id}: ${(e as Error).message}`);
-          }
         }
         const storyCat =
           section.category === "tamil-nadu" && POLITICS.test(`${title} ${paragraphs[0] ?? ""}`)
