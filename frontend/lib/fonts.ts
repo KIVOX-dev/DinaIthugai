@@ -1,8 +1,6 @@
-import { Inter, Noto_Sans_Tamil, Noto_Serif_Tamil, Source_Serif_4 } from "next/font/google";
+import { Anek_Tamil } from "next/font/google";
 
-export const sansTa = Noto_Sans_Tamil({ subsets: ["tamil"], variable: "--font-sans-ta", display: "swap", weight: ["400", "500", "700", "800"] });
-export const serifTa = Noto_Serif_Tamil({ subsets: ["tamil"], variable: "--font-serif-ta", display: "swap", weight: ["600", "700", "800"] });
-export const sansEn = Inter({ subsets: ["latin"], variable: "--font-sans-en", display: "swap" });
-export const serifEn = Source_Serif_4({ subsets: ["latin"], variable: "--font-serif-en", display: "swap", weight: ["400", "600", "700"] });
+/** The site uses Anek Tamil only (variable font: weights 100-800, Tamil + Latin glyphs). */
+export const anekTamil = Anek_Tamil({ subsets: ["tamil", "latin"], variable: "--font-anek", display: "swap", weight: "variable" });
 
-export const fontVars = `${sansTa.variable} ${serifTa.variable} ${sansEn.variable} ${serifEn.variable}`;
+export const fontVars = anekTamil.variable;

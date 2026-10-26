@@ -18,7 +18,7 @@ const UA = "DinaIdhigaiBot/1.0 (+licensed Coimbatore news import)";
 const BYLINE = "தின இதிகை செய்திக் குழு";
 
 /** Dinamalar listing path -> our category slug. */
-export const SECTIONS: { path: string; category: string; name: { ta: string; en: string }; parent?: string }[] = [
+export const SECTIONS: { path: string; category: string; name: { ta: string; en: string }; parent?: string; origin?: string; exclude?: RegExp }[] = [
   { path: "/news/tamil-nadu-district-news-coimbatore", category: "coimbatore", name: { ta: "கோவை", en: "Coimbatore" }, parent: "tamil-nadu" },
   { path: "/news/tamil-nadu-district-news-nilgiris", category: "nilgiris", name: { ta: "நீலகிரி", en: "Nilgiris" }, parent: "tamil-nadu" },
   { path: "/news/tamil-nadu-district-news-tiruppur", category: "tiruppur", name: { ta: "திருப்பூர்", en: "Tiruppur" }, parent: "tamil-nadu" },
@@ -31,6 +31,8 @@ export const SECTIONS: { path: string; category: string; name: { ta: string; en:
   { path: "/news/business", category: "business", name: { ta: "வணிகம்", en: "Business" } },
   { path: "/news/sports", category: "sports", name: { ta: "விளையாட்டு", en: "Sports" } },
   { path: "/news/kalvimalar-news", category: "education", name: { ta: "கல்வி", en: "Education" } },
+  // Dinamalar Cinema lives on its own site; gossip columns are left out.
+  { origin: "https://cinema.dinamalar.com", path: "/news/", category: "cinema", name: { ta: "சினிமா", en: "Cinema" }, exclude: /\/cinema-gossip\// },
 ];
 
 /** Dinamalar has no politics section: Tamil Nadu stories about parties, ministers, elections etc. go to our Politics category. */
@@ -74,10 +76,15 @@ export function parseListing(html: string, path: string): string[] {
 export function parseStory(html: string, url: string): Story | null {
   const meta = (p: string) => html.match(new RegExp(`<meta property="${p}" content="([^"]*)"`))?.[1];
   const title = clean(meta("og:title") ?? "");
-  const paragraphs = [...html.matchAll(/<p class="[^"]*allow-copy[^"]*">([\s\S]*?)<\/p>/g)].map((m) => clean(m[1])).filter(Boolean);
+  let paragraphs = [...html.matchAll(/<p class="[^"]*allow-copy[^"]*">([\s\S]*?)<\/p>/g)].map((m) => clean(m[1])).filter(Boolean);
+  if (!paragraphs.length) {
+    // Dinamalar Cinema: the whole article sits in one #reader-body block, paragraphs separated by <br>
+    const body = html.match(/<div id="reader-body"[^>]*>([\s\S]*?)<\/div>/)?.[1];
+    if (body) paragraphs = body.split(/(?:<br\s*\/?>\s*){1,}|<\/p>/i).map((p) => clean(p)).filter(Boolean);
+  }
   const id = url.match(/\/(\d+)$/)?.[1];
   if (!title || !id || !paragraphs.length) return null;
-  const date = html.match(/"publisheddate":"([^"]+)"/)?.[1];
+  const date = html.match(/"publisheddate":"([^"]+)"/)?.[1] ?? html.match(/"datePublished":"([^"]+)"/)?.[1];
   const image = meta("og:image")?.replace(/\?.*$/, "");
   return { url, id, title, paragraphs, imageUrl: image, publishedAt: date ? new Date(date) : undefined };
 }
@@ -110,12 +117,13 @@ async function runImport(opts: { limit?: number; publish?: boolean }): Promise<I
   const allowed = licensed();
   for (const section of SECTIONS.filter((s) => allowed.has(s.category))) {
     const cat = await ensureCategory(section);
-    const links = parseListing(await (await get(ORIGIN + section.path)).text(), section.path);
+    const origin = section.origin ?? ORIGIN;
+    const links = parseListing(await (await get(origin + section.path)).text(), section.path).filter((l) => !section.exclude?.test(l));
     let imported = 0; // `limit` applies per section so every district gets its share
     for (const link of links) {
       if (imported >= limit) break;
       result.checked++;
-      const url = ORIGIN + link;
+      const url = origin + link;
       try {
         if (await Article.exists({ "importedFrom.url": url })) {
           result.skipped++;
