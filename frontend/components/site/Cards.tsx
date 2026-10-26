@@ -56,14 +56,15 @@ export function LeadCard({ card, lang }: { card: ArticleCard; lang: Locale }) {
   );
 }
 
-export function StoryCard({ card, lang, ratio = "3/2" }: { card: ArticleCard; lang: Locale; ratio?: string }) {
+export function StoryCard({ card, lang, ratio = "3/2", big = false }: { card: ArticleCard; lang: Locale; ratio?: string; big?: boolean }) {
   return (
     <article>
       <Link href={articleHref(card.lang, card.slug)} className="block no-underline">
-        <Thumb card={card} ratio={ratio} sizes="(min-width:1024px) 300px, 50vw" />
+        <Thumb card={card} ratio={ratio} sizes={big ? "(min-width:1024px) 480px, 100vw" : "(min-width:1024px) 300px, 50vw"} />
         <div className="mt-2">
           <Kicker card={card} />
-          <h3 className="headline mt-0.5 text-lg">{card.title}</h3>
+          <h3 className={`headline mt-0.5 ${big ? "text-2xl" : "line-clamp-3 text-lg"}`}>{card.title}</h3>
+          {big && card.excerpt && <p className="mt-2 line-clamp-3 text-ink2">{card.excerpt}</p>}
         </div>
       </Link>
       <Meta card={card} lang={lang} />

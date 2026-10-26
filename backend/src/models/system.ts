@@ -57,6 +57,7 @@ const settingsSchema = new Schema<any>(
       type: [{ _id: false, text: { type: String, maxlength: 300 }, href: { type: String, maxlength: 500 }, enabled: { type: Boolean, default: true }, order: { type: Number, default: 100 } }],
       default: [],
     },
+    headlinesRefreshedAt: Date,
     seo: {
       title: { ta: String, en: String },
       description: { ta: String, en: String },
@@ -92,6 +93,7 @@ export interface SettingsDoc {
   defaultLocale: "ta" | "en";
   enabledLocales: string[];
   edition: L;
+  headlinesRefreshedAt?: Date | null;
   priorityRegions: string[];
   customHeadlines: { text?: string | null; href?: string | null; enabled?: boolean; order?: number }[];
   homepageSections: { key?: string | null; enabled?: boolean; order?: number; limit?: number }[];

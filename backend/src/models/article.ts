@@ -54,6 +54,8 @@ const articleSchema = new Schema(
       ],
     },
 
+    headline: { ta: { type: String, maxlength: 300 } }, // AI-refreshed homepage headline (the real title is untouched)
+    headlineAt: Date,
     featured: { type: Boolean, default: false },
     trending: { type: Boolean, default: false },
     breaking: { type: Boolean, default: false },

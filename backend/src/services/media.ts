@@ -74,14 +74,14 @@ async function storeVariants(buf: Buffer) {
   return { processed, stored, storageKind: storage.kind };
 }
 
-export async function uploadImage(actor: Principal, file: { buffer: Buffer; name?: string }, meta: { caption?: { ta?: string; en?: string }; credit?: string; alt?: { ta?: string; en?: string } } = {}) {
+export async function uploadImage(actor: Principal, file: { buffer: Buffer; name?: string }, meta: { caption?: { ta?: string; en?: string }; credit?: string; alt?: { ta?: string; en?: string } } = {}, opts: { skipRateLimit?: boolean } = {}) {
   await connectDB();
   if (actor.status !== "active") throw forbidden();
   const settings = await getSettings();
   if (!isStaff(actor) && settings.submissions?.requireVerifiedEmail && !actor.emailVerified) {
     throw forbidden("Verify your email address before uploading photographs.");
   }
-  await enforceRateLimit(`upload:${actor.id}`, 60, 3600);
+  if (!opts.skipRateLimit) await enforceRateLimit(`upload:${actor.id}`, 60, 3600);
   const { processed, stored, storageKind } = await storeVariants(file.buffer);
   const orig = stored.find((s) => s.name === "orig")!;
   const doc = await MediaAsset.create({

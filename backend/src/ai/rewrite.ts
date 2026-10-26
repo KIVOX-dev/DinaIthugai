@@ -116,7 +116,7 @@ export function unmaskMedia(html: string, media: string[]) {
 /** Which keys have been rate-limited recently: skipped until the cool-down passes. */
 const coolDown = new Map<string, number>();
 
-async function callProvider(system: string, user: string): Promise<{ text: string; provider: string; model: string }> {
+export async function callProvider(system: string, user: string): Promise<{ text: string; provider: string; model: string }> {
   const e = env();
   const keys = aiKeys(e);
   if (!keys.length) throw new ServiceError("unavailable", "The AI assistant is not configured. Set AI_API_KEYS on the server.");

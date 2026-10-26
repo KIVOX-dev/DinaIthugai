@@ -4,7 +4,7 @@ import { isLocale } from "@/lib/shared/i18n";
 import { apiGet } from "@/lib/api";
 import { articleHref, type HomeData, type SiteData } from "@/lib/types";
 import { makeT } from "@/lib/i18n/dictionary";
-import { CompactItem, LeadCard, RowCard, StoryCard } from "@/components/site/Cards";
+import { CompactItem, LeadCard, StoryCard } from "@/components/site/Cards";
 import { AdSlot } from "@/components/site/AdSlot";
 
 export const dynamic = "force-dynamic";
@@ -74,23 +74,6 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           <span className="h-px flex-1 bg-ink/50" aria-hidden="true" />
         </div>
 
-        {h.customHeadlines && h.customHeadlines.length > 0 && (
-          <ul className="mt-5 grid gap-x-8 gap-y-1 border-y border-rule py-3 sm:grid-cols-2">
-            {h.customHeadlines.map((c, i) => (
-              <li key={i} className="headline flex gap-2 text-lg leading-snug">
-                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-accent" aria-hidden="true" />
-                {c.href ? (
-                  <Link href={c.href} className="no-underline hover:underline" {...(/^https?:/.test(c.href) ? { target: "_blank", rel: "noopener" } : {})}>
-                    {c.text}
-                  </Link>
-                ) : (
-                  <span>{c.text}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-
         <div className="mt-6 grid gap-8 md:grid-cols-2 lg:grid-cols-[1fr_1.7fr_1fr]">
           <div className="order-2 space-y-6 md:order-2 lg:order-none lg:border-r lg:border-rule lg:pr-6">
             {h.secondary.slice(0, 2).map((c) => (
@@ -100,6 +83,18 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
           <div className="order-1 md:col-span-2 lg:order-none lg:col-span-1">
             <LeadCard card={h.lead} lang={lang} />
             <ul className="mt-5 grid gap-x-6 sm:grid-cols-2">
+              {/* Admin-typed headlines come first, then the newest stories, all in one list. */}
+              {(h.customHeadlines ?? []).map((c, i) => (
+                <li key={`custom-${i}`} className="flex gap-3 border-b border-rule py-2 last:border-0">
+                  {c.href ? (
+                    <Link href={c.href} className="headline text-[15px] no-underline hover:underline" {...(/^https?:/.test(c.href) ? { target: "_blank", rel: "noopener" } : {})}>
+                      {c.text}
+                    </Link>
+                  ) : (
+                    <span className="headline text-[15px]">{c.text}</span>
+                  )}
+                </li>
+              ))}
               {h.latest.slice(0, 4).map((c) => (
                 <CompactItem key={c.id} card={c} />
               ))}
@@ -137,19 +132,28 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
                   {t("common.view_all")} →
                 </Link>
               </div>
-              <div className="grid gap-5 md:grid-cols-2">
-                <StoryCard card={s.items[0]} lang={lang} ratio="16/10" />
-                <div>
-                  {s.items.slice(1).map((c) => (
-                    <RowCard key={c.id} card={c} lang={lang} />
-                  ))}
+              {/* One large lead beside up to four equal cards: always a tidy block, whatever the story count. */}
+              <div className="grid gap-x-5 gap-y-6 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="sm:col-span-2 lg:row-span-2">
+                  <StoryCard card={s.items[0]} lang={lang} ratio="16/10" big />
                 </div>
+                {s.items.slice(1, 5).map((c) => (
+                  <StoryCard key={c.id} card={c} lang={lang} ratio="4/3" />
+                ))}
               </div>
               {idx === 1 && <AdSlot ads={h.ads.home_inline} lang={lang} className="mt-6" />}
             </section>
           ))}
         </div>
-        <aside className="space-y-8 lg:col-span-4">
+        <aside className="space-y-8 lg:col-span-4 lg:border-l lg:border-rule lg:pl-6">
+          <section>
+            <h2 className="section-title">{t("home.latest")}</h2>
+            <ul>
+              {h.latest.slice(4, 10).map((c) => (
+                <CompactItem key={c.id} card={c} />
+              ))}
+            </ul>
+          </section>
           <section>
             <h2 className="section-title">{t("nav.submit")}</h2>
             <p className="text-sm text-ink2">{t("submit.sub")}</p>

@@ -116,7 +116,7 @@ export async function importDinamalar(opts: { limit?: number; publish?: boolean 
         if (story.imageUrl) {
           try {
             const buf = Buffer.from(await (await get(`${story.imageUrl}?im=Resize,width=1600`)).arrayBuffer());
-            const media = await uploadImage(actor, { buffer: buf, name: `dinamalar-${story.id}.jpg` }, { alt: { ta: story.title } });
+            const media = await uploadImage(actor, { buffer: buf, name: `dinamalar-${story.id}.jpg` }, { alt: { ta: story.title } }, { skipRateLimit: true }); // trusted server-side import
             featuredImage = media.id;
             await MediaAsset.updateOne({ _id: media.id }, { $set: { origin: "dinamalar" } });
           } catch (e) {

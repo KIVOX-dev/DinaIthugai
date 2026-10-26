@@ -151,6 +151,16 @@ export async function getHomepage(lang: Locale) {
     secondary.push(c);
   }
   const latest = latestPool.filter((c) => !used.has(c.id)).slice(0, 10);
+  // Use today's AI-refreshed headline wording on the homepage headline area, when there is one.
+  const headlineCards = [lead, ...secondary, ...latest].filter((c): c is ArticleCard => !!c && c.lang === "ta");
+  if (headlineCards.length) {
+    const rows = await Article.find({ _id: { $in: headlineCards.map((c) => c.id) }, "headline.ta": { $exists: true, $ne: "" } }).select("headline").lean();
+    const fresh = new Map(rows.map((r) => [String(r._id), (r as { headline?: { ta?: string } }).headline?.ta]));
+    for (const c of headlineCards) {
+      const hl = fresh.get(c.id);
+      if (hl) c.title = hl;
+    }
+  }
 
   const configured = (settings.homepageSections ?? []).filter((s) => s.enabled !== false && s.key && !["latest", "trending", "gallery"].includes(s.key)).sort((a, b) => (a.order ?? 100) - (b.order ?? 100));
   const flat = tree.flatMap((n) => [n, ...n.children]);

@@ -11,6 +11,7 @@ import { cleanupUnusedMedia, deleteMedia, listMedia, replaceMedia, updateMediaMe
 import { deleteAd, deleteCategory, listAds, listTags, saveAd, saveCategory, saveSettings, saveTag } from "../services/admin";
 import { addUserNote, adminRevokeSessions, adminTriggerReset, adminUpdateUser, adminVerifyEmail, exportUsersCsv, getUserDetail, listUsers, processDeletion, setAccountStatus, setPublicAuthor, setRoleAndPermissions } from "../services/users";
 import { runAiAssist } from "../ai/rewrite";
+import { refreshHeadlinesIfDue } from "../ai/headlines";
 import { importDinamalar, purgeImportedMedia } from "../import/dinamalar";
 import { getSettings } from "../services/settings";
 import { ServiceError } from "../services/common";
@@ -201,7 +202,8 @@ cronRouter.all("/publish-scheduled", async (req, res) => {
   const r = await publishDueScheduled();
   const c = await cleanupUnusedMedia();
   const d = await purgeImportedMedia();
-  res.json({ ...r, mediaRemoved: c.removed, importedMediaRemoved: d.removed });
+  const hl = await refreshHeadlinesIfDue();
+  res.json({ ...r, mediaRemoved: c.removed, importedMediaRemoved: d.removed, headlines: hl });
 });
 
 cronRouter.all("/import-dinamalar", async (req, res) => {
